@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.p.it.vigilatornode.configuration;
 
-import nl.p.it.vigilatornode.exception.UnstartableException;
+package nl.p.it.vigilatornode.domain.resources;
 
 /**
- * Reader that reads configuration from file(s)
- *
+ * Base monitored resource
+ * 
  * @author Patrick
  */
-public interface Reader {
-
-    /**
-     * Reads a file and populates the given configuration with the read
-     * information
-     *
-     * @param config the configuration to populate
-     * @throws UnstartableException when the configuration file cannot be read
-     */
-    void load(final NodeConfig config) throws UnstartableException;
+public abstract class MonitoredResource {
 
 }
