@@ -19,7 +19,9 @@ import nl.p.it.vigilatornode.server.HttpServer;
 import static java.lang.System.Logger.Level.INFO;
 import nl.p.it.vigilatornode.configuration.LogConfig;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
+import nl.p.it.vigilatornode.domain.resources.MonitoredResourcesReader;
 import nl.p.it.vigilatornode.exception.CustomException;
+import nl.p.it.vigilatornode.exception.IncorrectResourceFileException;
 import nl.p.it.vigilatornode.exception.UnstartableException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
 
@@ -52,8 +54,10 @@ public class App {
         HttpServer.getInstance().start();
     }
 
-    private static void startMonitoring(final NodeConfig config) {
+    private static void startMonitoring(final NodeConfig config) throws IncorrectResourceFileException {
         // TODO: read resource files and start monitoring        
+
+        new MonitoredResourcesReader().read(config.getResourceFilesLocation());
     }
 
     private static String getEnvironment(final String[] args) throws VigilatorNodeException {
