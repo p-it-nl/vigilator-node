@@ -40,7 +40,12 @@ public enum CustomException {
     NO_REPONSE_RECEIVED("The request did not result in a response, this is a fatal error indicating connection issues"),
     THE_REQUEST_FAILED("The request to upstream server failed due to IO issues, probably the request timed out"),
     THE_REQUEST_RESULTED_IN_IO_ISSUES("The request had issues while reading or writing to the request, this might be due to connectivity issues resulting in incomplete datastreams"),
-    COULD_NOT_CONFIGURE_LOGGER("Logger could not be configured, please validate path to log as configured in the properties is accessable");
+    COULD_NOT_CONFIGURE_LOGGER("Logger could not be configured, please validate path to log as configured in the properties is accessable"),
+    COULD_NOT_READ_RESOURCE_FILES("""
+            The specified location for reading monitored resources files could 
+            not be accessed, validate the location is correct and the application 
+            is permitted to access the location"""),
+    INVALID_RESOURCE_FILE("Incorrect resource file: %s, error: %s");
 
     private final String message;
 

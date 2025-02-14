@@ -37,9 +37,10 @@ import static java.lang.System.Logger.Level.WARNING;
  * <p>
  * Will find the corresponding setter based on `get` + `key capitalised`
  * </p>
+ *
  * @author Patrick
  */
-public class ConfigurationReader implements Reader {
+public class ConfigurationReader {
 
     private final StringBuilder sb;
     private final String environment;
@@ -54,7 +55,13 @@ public class ConfigurationReader implements Reader {
         sb = new StringBuilder();
     }
 
-    @Override
+    /**
+     * Read the configuration file based on the environment this reader was
+     * created for and populate the config
+     *
+     * @param config the config to populate
+     * @throws UnstartableException when the configuration could not be read
+     */
     public void load(final NodeConfig config) throws UnstartableException {
         if (config != null) {
             try (InputStream configurationFile = getClass().getResourceAsStream(String.format(APP_PROPERTIES, environment))) {
@@ -105,8 +112,8 @@ public class ConfigurationReader implements Reader {
                 Type type = method.getParameterTypes()[0];
                 if (type.equals(int.class)) {
                     method.invoke(config, Integer.valueOf(value.toString()));
-                } else if(type.equals(boolean.class)){
-                    method.invoke(config, Boolean.valueOf(value.toString()));                    
+                } else if (type.equals(boolean.class)) {
+                    method.invoke(config, Boolean.valueOf(value.toString()));
                 } else {
                     method.invoke(config, value);
                 }
