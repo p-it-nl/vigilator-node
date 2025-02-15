@@ -27,12 +27,20 @@ public abstract class MonitoredResource {
 
     private int counter;
     private String name;
+    private MonitoredResourceConfig config;
     private final Map<String, MonitoredPart> parts;
 
     public MonitoredResource() {
+        config = new MonitoredResourceConfig();
         parts = new HashMap<>();
     }
-    
+
+    /**
+     * Decorate the resource
+     * 
+     * @param decorator the item to decorate
+     * @param value the value to decorate with
+     */
     public void decorate(final String decorator, final String value) {
         boolean hasDecorator = !decorator.isEmpty();
         if (hasDecorator && parts.containsKey(decorator)) {
@@ -44,16 +52,22 @@ public abstract class MonitoredResource {
         }
     }
 
+    /**
+     * Decorate the resource
+     * 
+     * @param decorator the item to decorate
+     * @param key the key of the value to decorate with
+     * @param value the value to decorate with
+     */
     public void decorate(final String decorator, final String key, final String value) {
         boolean hasDecorator = !decorator.isEmpty();
-        if (hasDecorator && config -> TYPE == decorator) {
-            config -> set(key, value);
+        if (hasDecorator && MonitoredResourceConfig.TYPE.equals(decorator)) {
+            config.set(key, value);
         } else if (hasDecorator) {
-            if (!parts[decorator]) {
-                parts[decorator] = new MonitoredPart();
+            if (!parts.containsKey(decorator)) {
+                parts.put(decorator, new MonitoredPart());
             }
-            parts[decorator]
-            ->addItem(key, value);
+            parts.get(decorator).addItem(key, value);
         }
     }
 
