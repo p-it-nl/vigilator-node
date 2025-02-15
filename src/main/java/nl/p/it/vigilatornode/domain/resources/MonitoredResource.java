@@ -25,9 +25,8 @@ import java.util.Map;
  */
 public abstract class MonitoredResource {
 
-    private int counter;
     private String name;
-    private MonitoredResourceConfig config;
+    private final MonitoredResourceConfig config;
     private final Map<String, MonitoredPart> parts;
 
     public MonitoredResource() {
@@ -37,13 +36,13 @@ public abstract class MonitoredResource {
 
     /**
      * Decorate the resource
-     * 
+     *
      * @param decorator the item to decorate
      * @param value the value to decorate with
      */
     public void decorate(final String decorator, final String value) {
         boolean hasDecorator = !decorator.isEmpty();
-        if (hasDecorator && parts.containsKey(decorator)) {
+        if (hasDecorator && !parts.containsKey(decorator)) {
             parts.put(decorator, new MonitoredPart());
         }
 
@@ -54,7 +53,7 @@ public abstract class MonitoredResource {
 
     /**
      * Decorate the resource
-     * 
+     *
      * @param decorator the item to decorate
      * @param key the key of the value to decorate with
      * @param value the value to decorate with
@@ -85,4 +84,10 @@ public abstract class MonitoredResource {
         this.name = name;
     }
 
+    /**
+     * @return the configuration of this monitored resource
+     */
+    public MonitoredResourceConfig getConfig() {
+        return config;
+    }
 }
