@@ -16,6 +16,8 @@
 package nl.p.it.vigilatornode.domain.monitor;
 
 import java.util.List;
+import nl.p.it.vigilatornode.configuration.NodeConfig;
+import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 
 /**
@@ -26,5 +28,26 @@ import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 public class Monitor {
 
     private List<MonitoredResource> resources;
+    private OutgoingClient outgoing;
 
+    private static final System.Logger LOGGER = System.getLogger(Monitor.class.getName());
+
+    public Monitor(final NodeConfig config) {
+        outgoing = OutgoingClient.getInstance(config);
+    }
+
+    public void monitor() {
+
+        // TODO: Move this to resource that needs it
+        //MonitoredData result = outgoing.scheduleRequest(null, getAcceptor())
+    }
+
+    /* TODO: Move this to resource that needs it
+    private Acceptor<MonitoredData> getAcceptor() {
+        return (final MonitoredData data) -> {
+            LOGGER.log(INFO, "Monitor finished request");
+            
+            data.label(take);
+        };
+    }*/
 }

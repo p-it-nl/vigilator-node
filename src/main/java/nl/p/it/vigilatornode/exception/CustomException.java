@@ -37,6 +37,7 @@ public enum CustomException {
     UNEXPECTED_EXCEPTION_DURING_REQUEST("Sending the request resulted in an unexpected exception"),
     THE_REQUEST_WAS_NOT_AUTHORIZED("Sending the request resulted in authorization problems, validate any authorization requirements are met"),
     INVALID_URL("Requesting the request from the http builder failed due to the url for the request not being a valid url, url being: %s"),
+    REQUIRED_VALUES_NOT_PROVIDED("Request requires a http request, acceptor and http client. Missing is: %s"),
     NO_REPONSE_RECEIVED("The request did not result in a response, this is a fatal error indicating connection issues"),
     THE_REQUEST_FAILED("The request to upstream server failed due to IO issues, probably the request timed out"),
     THE_REQUEST_RESULTED_IN_IO_ISSUES("The request had issues while reading or writing to the request, this might be due to connectivity issues resulting in incomplete datastreams"),

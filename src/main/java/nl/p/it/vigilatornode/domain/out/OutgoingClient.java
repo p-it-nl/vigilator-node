@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
@@ -47,8 +46,8 @@ public class OutgoingClient {
 
     private static final System.Logger LOGGER = System.getLogger(OutgoingClient.class.getName());
 
-    private OutgoingClient() {
-        this.config = NodeConfig.getInstance();
+    private OutgoingClient(final NodeConfig config) {
+        this.config = config;
         this.builder = HttpRequest.newBuilder();
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMinutes(1))
@@ -58,15 +57,16 @@ public class OutgoingClient {
     }
 
     /**
-     * Returns an `singleton` instance of the http client. This will simplify
+     * Returns an `singleton` instance of the http client.This will simplify
      * optimizing outgoing requests and prevent this responsibility of being
      * spread throughout the application
      *
+     * @param config the configuration of the node
      * @return the http client
      */
-    public static synchronized OutgoingClient getInstance() {
+    public static synchronized OutgoingClient getInstance(final NodeConfig config) {
         if (instance == null) {
-            instance = new OutgoingClient();
+            instance = new OutgoingClient(config);
         }
 
         return instance;
@@ -90,7 +90,7 @@ public class OutgoingClient {
                     .build();
 
             executor.submit(new Request(request, acceptor, client));
-        } catch (IllegalArgumentException | URISyntaxException ex) {
+        } catch (IllegalArgumentException | NullPointerException | URISyntaxException ex) {
             throw new HttpClientException(CustomException.INVALID_URL, url);
         }
     }
