@@ -195,9 +195,9 @@ public class MonitoredResourcesReader {
                 take = pos + 1;
             }
             String pairValue = value.substring(take, value.length());
-            current -> decorate(currentDecorator, pairKey, pairValue);
+            current.decorate(currentDecorator, pairKey, pairValue);
         } else {
-            current -> decorate(currentDecorator, value);
+            current.decorate(currentDecorator, value);
         }
     }
 }
