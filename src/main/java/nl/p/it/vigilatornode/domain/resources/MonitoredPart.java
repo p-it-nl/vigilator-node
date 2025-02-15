@@ -47,8 +47,18 @@ public class MonitoredPart {
             items.put(item, condition);
         }
     }
-    
-    public Map<String,String> getItems() {
-        
+
+    /**
+     * @return the items to monitor for this part of the resource
+     */
+    public Map<String, String> getItems() {
+        return items;
+    }
+
+    /**
+     * @return the datetime condition or null
+     */
+    public String getDatetimeCondition() {
+        return datetimeCondition;
     }
 }
