@@ -15,12 +15,10 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.IncorrectResourceFileException;
-import nl.p.it.vigilatornode.exception.UnstartableException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,9 +40,12 @@ public class MonitoredResourcesReaderTest {
     private static final String FOLDER_INCORRECT = "test-incorrect-files";
     private static final String FOLDER_CORRECT = "test-correct-files";
     private static final String PATH_TO_RESOURCES = "src/test/resources/";
-
+    private static final String FIRST_INCORRECT_MESSAGE = """
+        Incorrect resource file: inproperformat.conf, error: Unexpected resource 
+        type: NameOfTheResource, expected is either: ExposedResource, OnboardResource 
+         or InternalResource""";
     private static final Set<String> correctNames = Set.of("ResourceOne", "ResourceTwo", "ResourceThree");
-
+    
     private MonitoredResourcesReader classUnderTest;
 
     @BeforeEach
@@ -72,20 +73,19 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withNotExistingResourcesFilesLocation() {
-        CustomException expectedException = CustomException.COULD_NOT_READ_RESOURCE_FILES;
+        CustomException expectedException = CustomException.DIRECTORY_DOES_NOT_EXIST;
         String resourcesFilesLocation = DOES_NOT_EXIST;
 
         VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
             classUnderTest.read(resourcesFilesLocation);
         });
 
-        assertEquals(expectedException.getMessage(), exception.getMessage());
+        assertEquals(String.format(expectedException.getMessage(),resourcesFilesLocation), exception.getMessage());
     }
 
     @Test
     public void read_withEmptyFolder() throws IncorrectResourceFileException {
-        // TODO: read from resources folder
-        String resourcesFilesLocation = FOLDER_EMPTY;
+        String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_EMPTY;
 
         List<MonitoredResource> result = classUnderTest.read(resourcesFilesLocation);
 
@@ -94,14 +94,14 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withIncorrectResourcesFiles() {
-        CustomException expectedException = CustomException.INVALID_RESOURCE_FILE;
-        String resourcesFilesLocation = FOLDER_INCORRECT;
+        String expectedException = FIRST_INCORRECT_MESSAGE;
+        String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_INCORRECT;
 
         VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
             classUnderTest.read(resourcesFilesLocation);
         });
 
-        assertEquals(expectedException.getMessage(), exception.getMessage());
+        assertEquals(expectedException, exception.getMessage());
     }
 
     @Test

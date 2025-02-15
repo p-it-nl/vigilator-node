@@ -92,8 +92,9 @@ public class MonitoredResourcesReader {
                         throw new IncorrectResourceFileException(CustomException.COULD_NOT_READ_RESOURCE_FILES);
                     }
                 }
+            } else {
+                throw new IncorrectResourceFileException(CustomException.DIRECTORY_DOES_NOT_EXIST, resourcesFilesLocation);
             }
-
         } else {
             LOGGER.log(WARNING, "MonitoredResourcesReader.read() was called without an resources files location, the action will be ignored");
         }
@@ -174,7 +175,7 @@ public class MonitoredResourcesReader {
             case RESOURCE_INTERNAL ->
                 current = new InternalResource();
             default ->
-                throw new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE);
+                throw new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE, type);
         }
 
         if (current != null) {
