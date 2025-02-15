@@ -40,12 +40,9 @@ public class MonitoredResourcesReaderTest {
     private static final String FOLDER_INCORRECT = "test-incorrect-files";
     private static final String FOLDER_CORRECT = "test-correct-files";
     private static final String PATH_TO_RESOURCES = "src/test/resources/";
-    private static final String FIRST_INCORRECT_MESSAGE = """
-        Incorrect resource file: inproperformat.conf, error: Unexpected resource 
-        type: NameOfTheResource, expected is either: ExposedResource, OnboardResource 
-         or InternalResource""";
+    private static final String FIRST_INCORRECT_MESSAGE = "Incorrect resource file: inproperformat.conf, error: Unexpected resource type: NameOfTheResource, expected is either: ExposedResource, OnboardResource or InternalResource";
     private static final Set<String> correctNames = Set.of("ResourceOne", "ResourceTwo", "ResourceThree");
-    
+
     private MonitoredResourcesReader classUnderTest;
 
     @BeforeEach
@@ -80,7 +77,7 @@ public class MonitoredResourcesReaderTest {
             classUnderTest.read(resourcesFilesLocation);
         });
 
-        assertEquals(String.format(expectedException.getMessage(),resourcesFilesLocation), exception.getMessage());
+        assertEquals(String.format(expectedException.getMessage(), resourcesFilesLocation), exception.getMessage());
     }
 
     @Test
@@ -93,7 +90,7 @@ public class MonitoredResourcesReaderTest {
     }
 
     @Test
-    public void read_withIncorrectResourcesFiles() {
+    public void read_withIncorrectResourcesFiles() {// FUTURE_WORK: more incorrect tests, maybe not fail fast?
         String expectedException = FIRST_INCORRECT_MESSAGE;
         String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_INCORRECT;
 
@@ -114,7 +111,7 @@ public class MonitoredResourcesReaderTest {
         assertFalse(result.isEmpty());
         assertEquals(expectedSize, result.size());
 
-        for(MonitoredResource resource : result) {
+        for (MonitoredResource resource : result) {
             assertTrue(correctNames.contains(resource.getName()));
             assertNotNull(resource.getConfig());
         }
