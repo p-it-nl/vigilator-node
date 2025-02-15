@@ -18,15 +18,10 @@ package nl.p.it.vigilatornode.domain.data;
 import java.io.Serializable;
 import java.lang.ref.Cleaner;
 import java.time.Instant;
-import java.util.List;
 
 /**
  * Data that has been observed, meaning it has been received, understood and is
- * ready to be stored in the database.This is temporary saved data in the state
- * that makes sure that if either saving to the database or retrieving data
- * fails, the data remains. This also allows for concurrency to not be bound to
- * either task, meaning saving to database does not block retrieving data and
- * vice versa
+ * ready to be stored somewhere persisting (or not).
  *
  * @author Patrick
  * @param <T> type of data
@@ -40,16 +35,18 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
 
     /**
      * Static nested class avoids accidentally retaining the references to
-     * articles, preventing memory exhaustion and helps with graceful clean up
-     * after breaking exceptions or exhausted number of attempts to recover from
-     * a bad situation
+     * memory data, preventing memory exhaustion and helps with graceful clean
+     * up after breaking exceptions or exhausted number of attempts to recover
+     * from a bad situation. By storing carefully, the application can get away
+     * with attempting to collect vital monitoring data more rigoriously
      */
     static class State<T> implements Runnable {
 
         private byte[] data;
+        private int take;
         private final Instant timestamp;
 
-        State(final List<T> data) {
+        State(final byte[] data) {
             this.data = data;
             this.timestamp = Instant.now();
         }
@@ -65,8 +62,12 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
         this.cleanable = cleaner.register(this, state);
     }
 
-    public List<T> getData() {
+    public byte[] getData() {
         return this.state.data;
+    }
+
+    public void label(final int take) {
+        this.state.take = take;
     }
 
     public Instant getSince() {
