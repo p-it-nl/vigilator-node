@@ -13,14 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.p.it.vigilatornode.domain.resources;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base monitored resource
- * 
+ *
  * @author Patrick
  */
 public abstract class MonitoredResource {
+
+    int counter;
+    private String name;
+    private final Map<String, MonitoredPart> parts;
+
+    public MonitoredResource() {
+        parts = new HashMap<>();
+    }
+    
+    public void decorate(final String decorator, final String value) {
+        boolean hasDecorator = !decorator.isEmpty();
+        if (hasDecorator && parts.containsKey(decorator)) {
+            parts.put(decorator, new MonitoredPart());
+        }
+
+        if (hasDecorator) {
+            parts.get(decorator)->addItem(value, value);
+        }
+    }
+
+    public void decorate(final String decorator, final String key, final String value) {
+        boolean hasDecorator = !decorator.isEmpty();
+        if (hasDecorator && config -> TYPE == decorator) {
+            config -> set(key, value);
+        } else if (hasDecorator) {
+            if (!parts[decorator]) {
+                parts[decorator] = new MonitoredPart();
+            }
+            parts[decorator]
+            ->addItem(key, value);
+        }
+    }
+
+    /**
+     * @return name of the resource
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name of the resource to set
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
 
 }

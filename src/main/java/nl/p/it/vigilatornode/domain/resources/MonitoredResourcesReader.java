@@ -35,7 +35,9 @@ import nl.p.it.vigilatornode.exception.IncorrectResourceFileException;
  */
 public class MonitoredResourcesReader {
 
-    private static final System.Logger LOGGER = System.getLogger(MonitoredResourcesReader.class.getName());
+    private MonitoredResource current;
+    private String currentDecorator;
+    private final List<MonitoredResource> resources;
 
     private static final int DEPTH_RESOURCE = 0;
     private static final int DEPTH_RESOURCE_NAME = 1;
@@ -53,9 +55,20 @@ public class MonitoredResourcesReader {
     private static final int ENTER = 13;
     private static final int NEW_LINE = 10;
 
+    private static final System.Logger LOGGER = System.getLogger(MonitoredResourcesReader.class.getName());
+
+    public MonitoredResourcesReader() {
+        resources = new ArrayList<>();
+    }
+
     /**
      * Reads the files in the specified location, typically the
      * {resourceFilesLocation} in the config
+     *
+     * The function returns an immutable copy of resources read, both to prevent
+     * mutations and making sure no pointer to the internal list of resources
+     * exists outside the class which would stop the class from being garbage
+     * collected
      *
      * FUTURE_WORK: currently this is fail fast, a business case might be
      * created to log and discard failures and continue
@@ -66,17 +79,18 @@ public class MonitoredResourcesReader {
      * reading any resource file
      */
     public List<MonitoredResource> read(final String resourcesFilesLocation) throws IncorrectResourceFileException {
-        List<MonitoredResource> resources = new ArrayList<>();
         if (resourcesFilesLocation != null && !resourcesFilesLocation.isEmpty()) {
 
             File directory = new File(resourcesFilesLocation);
             if (directory.exists()) {
                 for (File entry : directory.listFiles()) {
                     try (InputStream resourceFileStream = new FileInputStream(entry)) {
-                        read(resourceFileStream, resources);
+                        read(resourceFileStream);
+                    } catch (IncorrectResourceFileException ex) {
+                        throw new IncorrectResourceFileException(CustomException.INVALID_RESOURCE_FILE, entry.getName(), ex.getMessage());
                     } catch (IOException ex) {
                         LOGGER.log(ERROR, "Not able to read resource files in {0}, exception: {1}", resourcesFilesLocation, ex);
-                        throw new IncorrectResourceFileException(CustomException.MISSING_APP_PROPERTIES);
+                        throw new IncorrectResourceFileException(CustomException.COULD_NOT_READ_RESOURCE_FILES);
                     }
                 }
             }
@@ -85,10 +99,10 @@ public class MonitoredResourcesReader {
             LOGGER.log(WARNING, "MonitoredResourcesReader.read() was called without an resources files location, the action will be ignored");
         }
 
-        return resources;
+        return List.copyOf(resources);
     }
 
-    private void read(final InputStream resourceFileStream, final List<MonitoredResource> resources) throws IOException, IncorrectResourceFileException {
+    private void read(final InputStream resourceFileStream) throws IOException, IncorrectResourceFileException {
         int buffSize = 1000;
         byte[] buffer = new byte[buffSize];// Size matters but 1 kb is reasonble to start with, optimizing later
         int depth = 0;
@@ -96,10 +110,10 @@ public class MonitoredResourcesReader {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             while (resourceFileStream.read(buffer) > 0) {
                 for (byte b : buffer) {// FUTURE_WORK: This works with ASCII maybe not unicode?
-                    if(EMPTY == b) {
+                    if (EMPTY == b) {
                         break;
                     }
-                    
+
                     switch (b) {
                         case TAB ->
                             depth++;
@@ -131,22 +145,59 @@ public class MonitoredResourcesReader {
         }
     }
 
-    private void referenceToResource(final String line, final int depth) {
-        System.out.println(line);
-        System.out.println(depth);
-
-        // TODO: continue here
+    private void referenceToResource(final String entry, final int depth) throws IncorrectResourceFileException {
+        switch (depth) {
+            case DEPTH_RESOURCE ->
+                construct(entry);
+            case DEPTH_RESOURCE_NAME -> {
+                if (current == null) {
+                    throw new IncorrectResourceFileException(CustomException.OUT_OF_CONTEXT_RESOURCE_NAME);
+                }
+                current.setName(entry);
+            }
+            case DEPTH_RESOURCE_PART ->
+                currentDecorator = entry;
+            case DEPTH_RESOURCE_PART_ENTRY ->
+                decorate(entry);
+            case DEPTH_RESOURCE_PART_ITEM ->
+                decorate(entry);
+            default ->
+                throw new IncorrectResourceFileException(CustomException.TO_DEEP_TABBING);
+        }
     }
 
-    private void construct(final String type) {
+    private void construct(final String type) throws IncorrectResourceFileException {
+        switch (type) {
+            case RESOURCE_EXPOSED ->
+                current = new ExposedResource();
+            case RESOURCE_ONBOARD ->
+                current = new OnboardResource();
+            case RESOURCE_INTERNAL ->
+                current = new InternalResource();
+            default ->
+                throw new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE);
+        }
 
+        if (current != null) {
+            resources.add(current);
+        }
     }
 
-    private void setDecorator(final String type) {
+    private void decorate(final String value) {
+        int pos = value.indexOf(DELIMITER_KEY_VALUE);
 
-    }
-
-    private void decorate(final String type) {
-
+        if (pos > 0) {
+            String pairKey = value.substring(0, pos);
+            int take;
+            if (Character.isSpaceChar(value.charAt(pos + 1))) {
+                take = pos + 2;
+            } else {
+                take = pos + 1;
+            }
+            String pairValue = value.substring(take, value.length());
+            current -> decorate(currentDecorator, pairKey, pairValue);
+        } else {
+            current -> decorate(currentDecorator, value);
+        }
     }
 }
