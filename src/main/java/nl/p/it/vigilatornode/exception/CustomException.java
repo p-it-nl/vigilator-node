@@ -35,7 +35,7 @@ public enum CustomException {
     UNEXPECTED_REQUEST_METHOD("The provided request method \'%s\' is not expected for this endpoint"),
     THE_REQUEST_GOT_INTERUPPTED("Sending the request failed due to interuption, trying agian might work"),
     UNEXPECTED_EXCEPTION_DURING_REQUEST("Sending the request resulted in an unexpected exception"),
-    THE_REQUEST_WAS_NOT_AUTHORIZED("Sending the request resulted in authorization problems, validate the token is correct and active"),
+    THE_REQUEST_WAS_NOT_AUTHORIZED("Sending the request resulted in authorization problems, validate any authorization requirements are met"),
     INVALID_URL("Requesting the request from the http builder failed due to the url for the request not being a valid url, url being: %s"),
     NO_REPONSE_RECEIVED("The request did not result in a response, this is a fatal error indicating connection issues"),
     THE_REQUEST_FAILED("The request to upstream server failed due to IO issues, probably the request timed out"),

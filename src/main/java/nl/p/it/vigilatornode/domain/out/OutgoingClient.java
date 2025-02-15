@@ -16,28 +16,43 @@
 package nl.p.it.vigilatornode.domain.out;
 
 import static java.lang.System.Logger.Level.INFO;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
+import nl.p.it.vigilatornode.exception.CustomException;
+import nl.p.it.vigilatornode.exception.HttpClientException;
 
 /**
  * Client for outgoing requests
  *
  * @author Patrick
  */
-public class HttpClient {
+public class OutgoingClient {
 
-    private final ThreadPoolExecutor executor;
     private final NodeConfig config;
+    private final HttpRequest.Builder builder;
+    private final HttpClient client;
+    private final ThreadPoolExecutor executor;
 
-    private static HttpClient instance;
+    private static OutgoingClient instance;
 
-    private static final System.Logger LOGGER = System.getLogger(HttpClient.class.getName());
+    private static final int DEFAULT_TIMEOUT_IN_MINUTES = 1;
 
-    private HttpClient() {
+    private static final System.Logger LOGGER = System.getLogger(OutgoingClient.class.getName());
+
+    private OutgoingClient() {
         this.config = NodeConfig.getInstance();
+        this.builder = HttpRequest.newBuilder();
+        this.client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofMinutes(1))
+                .build();
 
         executor = config.getPoolExecutor();
     }
@@ -49,9 +64,9 @@ public class HttpClient {
      *
      * @return the http client
      */
-    public static synchronized HttpClient getInstance() {
+    public static synchronized OutgoingClient getInstance() {
         if (instance == null) {
-            instance = new HttpClient();
+            instance = new OutgoingClient();
         }
 
         return instance;
@@ -62,11 +77,22 @@ public class HttpClient {
      *
      * @param url the url to send request to
      * @param acceptor the method to accept the result
+     * @throws nl.p.it.vigilatornode.exception.HttpClientException when issues
+     * occur while sending the request
      */
-    public void scheduleRequest(final String url, final Acceptor<MonitoredData> acceptor) {
+    public void scheduleRequest(final String url, final Acceptor<MonitoredData> acceptor) throws HttpClientException {
         LOGGER.log(INFO, "Queuing request");
 
-        executor.submit(new (url, acceptor));
+        try {
+            HttpRequest request = builder.GET()
+                    .uri(new URI(url))
+                    .timeout(Duration.ofMinutes(DEFAULT_TIMEOUT_IN_MINUTES))
+                    .build();
+
+            executor.submit(new Request(request, acceptor, client));
+        } catch (IllegalArgumentException | URISyntaxException ex) {
+            throw new HttpClientException(CustomException.INVALID_URL, url);
+        }
     }
 
     /**
@@ -75,5 +101,6 @@ public class HttpClient {
      */
     public void stopProcess() {
         executor.shutdown();
+        client.close();
     }
 }

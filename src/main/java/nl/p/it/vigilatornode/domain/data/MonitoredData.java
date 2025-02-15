@@ -46,7 +46,7 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
      */
     static class State<T> implements Runnable {
 
-        private List<T> data;
+        private byte[] data;
         private final Instant timestamp;
 
         State(final List<T> data) {
@@ -60,7 +60,7 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
         }
     }
 
-    public MonitoredData(final List<T> data) {
+    public MonitoredData(final byte[] data) {
         this.state = new State<>(data);
         this.cleanable = cleaner.register(this, state);
     }

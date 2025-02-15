@@ -1,0 +1,91 @@
+/**
+ * Copyright (c) p-it
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package nl.p.it.vigilatornode.domain.out;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.IOException;
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import nl.p.it.vigilatornode.domain.data.MonitoredData;
+import nl.p.it.vigilatornode.domain.monitor.Acceptor;
+import nl.p.it.vigilatornode.exception.CustomException;
+import nl.p.it.vigilatornode.exception.HttpClientException;
+
+/**
+ * Request to execute
+ *
+ * @author Patrick
+ */
+public class Request implements Runnable {
+
+    private final HttpRequest request;
+    private final HttpClient client;
+    private final Acceptor<MonitoredData> acceptor;
+
+    private static final System.Logger LOGGER = System.getLogger(Request.class.getName());
+
+    public Request(final HttpRequest request, final Acceptor<MonitoredData> acceptor, final HttpClient client) {
+        this.acceptor = acceptor;
+        this.client = client;
+    }
+
+    @Override
+    public void run() {
+        try {
+            byte[] responseData = readResponse(
+                    client.send(request, HttpResponse.BodyHandlers.ofByteArray()));
+            if (responseData != null && responseData.length > 0) {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                ArticlePage pageResult = mapper.readValue(responseData.getKey(), mapper.getTypeFactory().constructType(ArticlePage.class));
+
+                acceptor.accept(pageResult.getRows());
+            } else {
+                LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
+            }
+        } catch (HttpClientException | IOException ex) {
+            LOGGER.log(ERROR, "Request failed with exception: {1}", ex);
+        } catch (InterruptedException ex) {
+            LOGGER.log(ERROR, "Request got interrupted: {1}", ex);
+            Thread.currentThread().interrupt();
+        }
+
+        if (acceptor != null) {
+            acceptor.accept(null);
+        }
+    }
+
+    private byte[] readResponse(final HttpResponse<byte[]> response) throws HttpClientException {
+        switch (response.statusCode()) {
+            case 200, 201 -> {
+                return response.body();
+            }
+            case 401, 403 -> {
+                throw new HttpClientException(CustomException.THE_REQUEST_WAS_NOT_AUTHORIZED);
+            }
+            default -> {
+                LOGGER.log(ERROR, "Unexpected response code received from afas, being: {0}, "
+                        + "containing message: {1}", response.statusCode(), new String(response.body()));
+            }
+        }
+
+        return new byte[0];
+    }
+}
