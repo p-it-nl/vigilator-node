@@ -215,10 +215,17 @@ public class NodeConfig {
     /**
      * Get a thread pool executor for the http server
      * <p>
-     * starting with {corePoolSize} core pool size, having 1 to {config.maxthreads} 
-     * worker threads where each thread is killed after 60 seconds idle time 
-     * having a fixed queue of maximum {config.maxqueuedtasks}, where excess tasks 
-     * are rejected by CallerRunsPolicy
+     * starting with {corePoolSize} core pool size, having 1 to
+     * {config.maxthreads} worker threads where each thread is killed after 60
+     * seconds idle time having a fixed queue of maximum
+     * {config.maxqueuedtasks}, where excess tasks are rejected by
+     * CallerRunsPolicy
+     * </p>
+     * <p>
+     * FUTURE_WORK: currently using same thread pool settings for both incoming
+     * and outgoing requests. This is fine but when requirements change this
+     * might be worthwhile to reevaluate
+     * </p>
      *
      * @see java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy</p>
      * @return the thread pool executor

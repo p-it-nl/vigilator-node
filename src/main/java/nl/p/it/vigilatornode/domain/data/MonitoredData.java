@@ -31,7 +31,7 @@ import java.util.List;
  * @author Patrick
  * @param <T> type of data
  */
-public class MonitoredPointInTime<T> implements AutoCloseable, Serializable {
+public class MonitoredData<T> implements AutoCloseable, Serializable {
 
     private final State<T> state;
     private final Cleaner.Cleanable cleanable;
@@ -60,7 +60,7 @@ public class MonitoredPointInTime<T> implements AutoCloseable, Serializable {
         }
     }
 
-    public MonitoredPointInTime(final List<T> data) {
+    public MonitoredData(final List<T> data) {
         this.state = new State<>(data);
         this.cleanable = cleaner.register(this, state);
     }
