@@ -15,8 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.out;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;
@@ -41,7 +39,15 @@ public class Request implements Runnable {
 
     private static final System.Logger LOGGER = System.getLogger(Request.class.getName());
 
-    public Request(final HttpRequest request, final Acceptor<MonitoredData> acceptor, final HttpClient client) {
+    public Request(final HttpRequest request, final Acceptor<MonitoredData> acceptor, final HttpClient client) throws HttpClientException {
+        if (request == null || acceptor == null || client == null) {
+            throw new HttpClientException(CustomException.REQUIRED_VALUES_NOT_PROVIDED,
+                    (request == null ? "request" : "")
+                    + (acceptor == null ? "acceptor" : "")
+                    + (client == null ? "client" : ""));
+        }
+
+        this.request = request;
         this.acceptor = acceptor;
         this.client = client;
     }
@@ -51,12 +57,8 @@ public class Request implements Runnable {
         try {
             byte[] responseData = readResponse(
                     client.send(request, HttpResponse.BodyHandlers.ofByteArray()));
-            if (responseData != null && responseData.length > 0) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                ArticlePage pageResult = mapper.readValue(responseData.getKey(), mapper.getTypeFactory().constructType(ArticlePage.class));
-
-                acceptor.accept(pageResult.getRows());
+            if (responseData != null) {
+                acceptor.accept(new MonitoredData(responseData));
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
             }
@@ -67,9 +69,7 @@ public class Request implements Runnable {
             Thread.currentThread().interrupt();
         }
 
-        if (acceptor != null) {
-            acceptor.accept(null);
-        }
+        acceptor.accept(new MonitoredData(new byte[0]));
     }
 
     private byte[] readResponse(final HttpResponse<byte[]> response) throws HttpClientException {
