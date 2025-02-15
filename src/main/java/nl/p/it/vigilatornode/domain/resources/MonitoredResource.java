@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public abstract class MonitoredResource {
 
-    int counter;
+    private int counter;
     private String name;
     private final Map<String, MonitoredPart> parts;
 
@@ -40,7 +40,7 @@ public abstract class MonitoredResource {
         }
 
         if (hasDecorator) {
-            parts.get(decorator)->addItem(value, value);
+            parts.get(decorator).addItem(value, value);
         }
     }
 
