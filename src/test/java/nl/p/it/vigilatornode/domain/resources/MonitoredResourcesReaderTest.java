@@ -15,12 +15,16 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.IncorrectResourceFileException;
 import nl.p.it.vigilatornode.exception.UnstartableException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,6 +42,8 @@ public class MonitoredResourcesReaderTest {
     private static final String FOLDER_INCORRECT = "test-incorrect-files";
     private static final String FOLDER_CORRECT = "test-correct-files";
     private static final String PATH_TO_RESOURCES = "src/test/resources/";
+
+    private static final Set<String> correctNames = Set.of("ResourceOne", "ResourceTwo", "ResourceThree");
 
     private MonitoredResourcesReader classUnderTest;
 
@@ -100,15 +106,18 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withCorrectResourcesFiles() throws IncorrectResourceFileException {
-        int expectedSize = 1;
+        int expectedSize = 3;
         String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_CORRECT;
 
         List<MonitoredResource> result = classUnderTest.read(resourcesFilesLocation);
-        
-        assertTrue(result.isEmpty());
+
+        assertFalse(result.isEmpty());
         assertEquals(expectedSize, result.size());
-        
-        // TODO: validate more
+
+        for(MonitoredResource resource : result) {
+            assertTrue(correctNames.contains(resource.getName()));
+            assertNotNull(resource.getConfig());
+        }
     }
 
 }
