@@ -48,10 +48,11 @@ public class MonitoredResourcesReader {
     private static final String RESOURCE_INTERNAL = "InternalResource";
     private static final String DELIMITER_KEY_VALUE = ":";
 
+    private static final int EMPTY = 0;
     private static final int TAB = 9;
     private static final int ENTER = 13;
     private static final int NEW_LINE = 10;
-    
+
     /**
      * Reads the files in the specified location, typically the
      * {resourceFilesLocation} in the config
@@ -93,8 +94,12 @@ public class MonitoredResourcesReader {
         int depth = 0;
         int line = 1;
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            while (resourceFileStream.read(buffer) == buffSize) {
+            while (resourceFileStream.read(buffer) > 0) {
                 for (byte b : buffer) {// FUTURE_WORK: This works with ASCII maybe not unicode?
+                    if(EMPTY == b) {
+                        break;
+                    }
+                    
                     switch (b) {
                         case TAB ->
                             depth++;
@@ -129,9 +134,8 @@ public class MonitoredResourcesReader {
     private void referenceToResource(final String line, final int depth) {
         System.out.println(line);
         System.out.println(depth);
-        
-        // TODO: continue here
 
+        // TODO: continue here
     }
 
     private void construct(final String type) {

@@ -37,6 +37,7 @@ public class MonitoredResourcesReaderTest {
     private static final String FOLDER_EMPTY = "test-empty-folder";
     private static final String FOLDER_INCORRECT = "test-incorrect-files";
     private static final String FOLDER_CORRECT = "test-correct-files";
+    private static final String PATH_TO_RESOURCES = "src/test/resources/";
 
     private MonitoredResourcesReader classUnderTest;
 
@@ -88,7 +89,7 @@ public class MonitoredResourcesReaderTest {
     @Test
     public void read_withIncorrectResourcesFiles() {
         CustomException expectedException = CustomException.INVALID_RESOURCE_FILE;
-        String resourcesFilesLocation = DOES_NOT_EXIST;
+        String resourcesFilesLocation = FOLDER_INCORRECT;
 
         VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
             classUnderTest.read(resourcesFilesLocation);
@@ -100,10 +101,10 @@ public class MonitoredResourcesReaderTest {
     @Test
     public void read_withCorrectResourcesFiles() throws IncorrectResourceFileException {
         int expectedSize = 1;
-        String resourcesFilesLocation = DOES_NOT_EXIST;
+        String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_CORRECT;
 
         List<MonitoredResource> result = classUnderTest.read(resourcesFilesLocation);
-
+        
         assertTrue(result.isEmpty());
         assertEquals(expectedSize, result.size());
         
