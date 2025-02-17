@@ -91,6 +91,11 @@ public abstract class MonitoredResource {
         return config;
     }
 
+    /**
+     * Update the status of the monitored resources
+     */
+    protected abstract void updateStatus();
+
     @Override
     public String toString() {
         return "MonitoredResource{"
