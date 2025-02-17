@@ -21,6 +21,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
+import nl.p.it.vigilatornode.exception.CustomException;
+import nl.p.it.vigilatornode.exception.MonitorException;
 
 /**
  * Monitor, schedules monitor tasks for resources and keeps track of results
@@ -36,7 +38,11 @@ public class Monitor {
 
     private static final System.Logger LOGGER = System.getLogger(Monitor.class.getName());
 
-    public Monitor(final NodeConfig config, final List<MonitoredResource> resources) {
+    public Monitor(final List<MonitoredResource> resources, final NodeConfig config) throws MonitorException {
+        if(config == null) {
+            throw new MonitorException(CustomException.CONFIG_REQUIRED);
+        }
+        
         outgoing = OutgoingClient.getInstance(config);
         this.resources = resources;
         this.executor = config.getSingleThreadExecutor();

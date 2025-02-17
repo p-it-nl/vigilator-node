@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for monitor task
+ * Tests for wait task
  *
  * @author Patrick
  */

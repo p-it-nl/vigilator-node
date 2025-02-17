@@ -50,7 +50,8 @@ public enum CustomException {
     INVALID_RESOURCE_FILE("Incorrect resource file: %s, line %s, error: %s"),
     OUT_OF_CONTEXT_RESOURCE_NAME("Resource name given outside the context of a resource"),
     TO_DEEP_TABBING("Unexpected character detected, tab depth deeper then expected"),
-    UNEXPECTED_RESOURCE("Unexpected resource type: %s, expected is either: ExposedResource, OnboardResource or InternalResource");
+    UNEXPECTED_RESOURCE("Unexpected resource type: %s, expected is either: ExposedResource, OnboardResource or InternalResource"),
+    CONFIG_REQUIRED("The object requires and instance of NodeConfig in order to be instantiated");
 
     private final String message;
 
