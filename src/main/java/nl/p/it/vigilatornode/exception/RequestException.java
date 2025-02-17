@@ -20,7 +20,9 @@ package nl.p.it.vigilatornode.exception;
  *
  * @author Patrick
  */
-public abstract class RequestException extends VigilatorNodeException {
+public sealed abstract class RequestException extends VigilatorNodeException permits
+        NotFoundException, BadRequestException, MethodNotAllowedException, 
+        UnprocessableEntityException, ServiceUnavailableException {
 
     protected RequestException(final CustomException exception) {
         super(exception);
@@ -29,6 +31,6 @@ public abstract class RequestException extends VigilatorNodeException {
     protected RequestException(final CustomException exception, final Object... args) {
         super(exception, args);
     }
-    
+
     public abstract int getStatusCode();
 }

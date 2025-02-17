@@ -20,7 +20,7 @@ package nl.p.it.vigilatornode.exception;
  *
  * @author Patrick
  */
-public class NotFoundException extends RequestException {
+public final class NotFoundException extends RequestException {
 
     public NotFoundException(final CustomException exception) {
         super(exception);

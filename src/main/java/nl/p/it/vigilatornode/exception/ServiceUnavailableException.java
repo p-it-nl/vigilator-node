@@ -20,7 +20,7 @@ package nl.p.it.vigilatornode.exception;
  * 
  * @author Patrick
  */
-public class ServiceUnavailableException extends RequestException {
+public final class ServiceUnavailableException extends RequestException {
 
     public ServiceUnavailableException(final CustomException exception) {
         super(exception);
