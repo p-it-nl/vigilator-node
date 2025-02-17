@@ -17,8 +17,7 @@ package nl.p.it.vigilatornode.configuration;
 
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for node config

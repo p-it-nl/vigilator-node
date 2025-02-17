@@ -16,34 +16,38 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * The ExposedResource class is a monitored resource available via internet
+ * Tests for exposed resource
  *
  * @author Patrick
  */
-public class ExposedResource extends MonitoredResource {
-
+@ExtendWith(MockitoExtension.class)
+public class ExposedResourceTest {
+    
+    @Mock
     private OutgoingClient client;
-
-    /**
-     * Connect the exposed resource to a outgoing client. This will be used to
-     * retrieve monitoring information
-     *
-     * @param client the outgoing client to connect to
-     */
-    public void connect(final OutgoingClient client) {
-        this.client = client;
+    
+    private ExposedResource classUnderTest;
+    
+    @BeforeEach
+    public void setUp() {
+        classUnderTest = new ExposedResource();
     }
-
-    /**
-     * Updates the status of the resource by sending requests to endpoints and
-     * inferring the replied data
-     *
-     * @see MonitoredResource.updateStatus()
-     */
-    @Override
-    protected void updateStatus() {
-        
+    
+    @Test
+    public void connectWithoutClient() {
+        assertDoesNotThrow(() -> classUnderTest.connect(null));
+    }
+    
+    @Test
+    public void connectWithClient() {
+        assertDoesNotThrow(() -> classUnderTest.connect(client));
     }
 }

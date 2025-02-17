@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
+import nl.p.it.vigilatornode.domain.resources.ExposedResource;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
@@ -31,6 +32,8 @@ import nl.p.it.vigilatornode.exception.MonitorException;
  */
 public class Monitor {
 
+    private boolean prepared;
+
     private final ThreadPoolExecutor executor;
     private final int defaultUpdateFrequency;
     private final OutgoingClient outgoing;
@@ -39,14 +42,15 @@ public class Monitor {
     private static final System.Logger LOGGER = System.getLogger(Monitor.class.getName());
 
     public Monitor(final List<MonitoredResource> resources, final NodeConfig config) throws MonitorException {
-        if(config == null) {
+        if (config == null) {
             throw new MonitorException(CustomException.CONFIG_REQUIRED);
         }
-        
+
         outgoing = OutgoingClient.getInstance(config);
         this.resources = resources;
         this.executor = config.getSingleThreadExecutor();
         this.defaultUpdateFrequency = config.getDefaultUpdateFrequency();
+        prepared = false;
     }
 
     /**
@@ -54,6 +58,9 @@ public class Monitor {
      */
     public void start() {
         LOGGER.log(INFO, "Starting monitor process");
+        if (!prepared) {
+            prepare();
+        }
 
         executor.submit(new MonitorTask(resources, monitorTaskFinished()));
     }
@@ -76,6 +83,21 @@ public class Monitor {
 
     private Notifier timeoutFinished() {
         return () -> start();
+    }
+
+    private void prepare() {
+        for (MonitoredResource resource : resources) {
+            switch (resource) {
+                case ExposedResource exposed -> {
+                    exposed.connect(outgoing);
+                }
+                default -> {
+                    // no preparation required
+                }
+            }
+
+        }
+        prepared = true;
     }
 
 }

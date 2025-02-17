@@ -15,7 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.monitor;
 
-import static java.lang.System.Logger.Level.ERROR;
 import java.util.List;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 
@@ -38,6 +37,9 @@ public class MonitorTask implements Runnable {
 
     @Override
     public void run() {
+        
+        
+        
         if (notifier != null) {
             notifier.doNotify();
         }
