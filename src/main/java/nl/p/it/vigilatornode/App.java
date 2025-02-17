@@ -27,6 +27,7 @@ import static java.lang.System.Logger.Level.INFO;
 import java.util.List;
 import nl.p.it.vigilatornode.domain.monitor.Monitor;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
+import nl.p.it.vigilatornode.exception.MonitorException;
 
 /**
  * Initializes the application
@@ -67,9 +68,9 @@ public class App {
         httpServer.start();
     }
 
-    private static void startMonitoring(final NodeConfig config) throws IncorrectResourceFileException {
+    private static void startMonitoring(final NodeConfig config) throws IncorrectResourceFileException, MonitorException {
         List<MonitoredResource> resources = new MonitoredResourcesReader().read(config.getResourceFilesLocation());
-        monitor = new Monitor(config, resources);
+        monitor = new Monitor(resources, config);
         monitor.start();
     }
 
