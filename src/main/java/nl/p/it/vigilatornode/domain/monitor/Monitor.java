@@ -15,7 +15,9 @@
  */
 package nl.p.it.vigilatornode.domain.monitor;
 
+import static java.lang.System.Logger.Level.INFO;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
@@ -27,27 +29,47 @@ import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
  */
 public class Monitor {
 
-    private List<MonitoredResource> resources;
-    private OutgoingClient outgoing;
+    private final ThreadPoolExecutor executor;
+    private final int defaultUpdateFrequency;
+    private final OutgoingClient outgoing;
+    private final List<MonitoredResource> resources;
 
     private static final System.Logger LOGGER = System.getLogger(Monitor.class.getName());
 
-    public Monitor(final NodeConfig config) {
+    public Monitor(final NodeConfig config, final List<MonitoredResource> resources) {
         outgoing = OutgoingClient.getInstance(config);
+        this.resources = resources;
+        this.executor = config.getSingleThreadExecutor();
+        this.defaultUpdateFrequency = config.getDefaultUpdateFrequency();
     }
 
-    public void monitor() {
+    /**
+     * Start monitoring the resources known to this monitor
+     */
+    public void start() {
+        LOGGER.log(INFO, "Starting monitor process");
 
-        // TODO: Move this to resource that needs it
-        //MonitoredData result = outgoing.scheduleRequest(null, getAcceptor())
+        executor.submit(new MonitorTask(resources, monitorTaskFinished()));
     }
 
-    /* TODO: Move this to resource that needs it
-    private Acceptor<MonitoredData> getAcceptor() {
-        return (final MonitoredData data) -> {
-            LOGGER.log(INFO, "Monitor finished request");
-            
-            data.label(take);
-        };
-    }*/
+    /**
+     * Stop the monitor, this gracefully ends active processes and stops
+     * executing
+     */
+    public void stop() {
+        executor.shutdown();
+    }
+
+    private Notifier monitorTaskFinished() {
+        return () -> timeout();
+    }
+
+    private void timeout() {
+        executor.submit(new WaitTask(defaultUpdateFrequency, timeoutFinished()));
+    }
+
+    private Notifier timeoutFinished() {
+        return () -> start();
+    }
+
 }

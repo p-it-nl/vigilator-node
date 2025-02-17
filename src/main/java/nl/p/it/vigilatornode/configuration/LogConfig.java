@@ -59,7 +59,6 @@ public class LogConfig {
             file.setLevel(Level.INFO);
             logger.addHandler(file);
         } catch (IOException exception) {
-            System.out.println(exception);
             throw new UnstartableException(CustomException.COULD_NOT_CONFIGURE_LOGGER);
         }
     }

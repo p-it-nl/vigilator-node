@@ -61,4 +61,11 @@ public class MonitoredPart {
     public String getDatetimeCondition() {
         return datetimeCondition;
     }
+
+    @Override
+    public String toString() {
+        return "MonitoredPart{"
+                + "datetimeCondition=" + datetimeCondition
+                + ", items=" + items + '}';
+    }
 }
