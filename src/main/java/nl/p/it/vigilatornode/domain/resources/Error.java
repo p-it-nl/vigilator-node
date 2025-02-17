@@ -16,7 +16,11 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 /**
- * Errors that can occur in a resource
+ * Errors that can occur in a resource. These errors are human readable entries
+ * that might be visible to the user.
+ * <p>
+ * Any technical information or long stacktraces should be logged.
+ * </p>
  *
  * @author Patrick
  */
@@ -24,6 +28,7 @@ public class Error {
 
     public static final String ERROR = "Error: %s";
     public static final String NO_WEB_URL = "item: Web, no web url provided";
+    public static final String NO_RESPONE = "Failed to get response for resource: %s on url: %s, see stacktrace for details";
 
     /**
      * Format a warning
