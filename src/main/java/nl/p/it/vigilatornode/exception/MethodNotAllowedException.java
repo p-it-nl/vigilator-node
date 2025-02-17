@@ -20,7 +20,7 @@ package nl.p.it.vigilatornode.exception;
  *
  * @author Patrick
  */
-public class MethodNotAllowedException extends RequestException {
+public final class MethodNotAllowedException extends RequestException {
 
     public MethodNotAllowedException(final CustomException exception) {
         super(exception);

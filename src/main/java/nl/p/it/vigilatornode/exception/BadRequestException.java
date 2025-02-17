@@ -20,7 +20,7 @@ package nl.p.it.vigilatornode.exception;
  *
  * @author Patrick
  */
-public class BadRequestException extends RequestException {
+public final class BadRequestException extends RequestException {
 
     public BadRequestException(final CustomException exception) {
         super(exception);

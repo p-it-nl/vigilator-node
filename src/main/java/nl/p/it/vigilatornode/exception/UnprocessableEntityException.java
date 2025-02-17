@@ -20,7 +20,7 @@ package nl.p.it.vigilatornode.exception;
  *
  * @author Patrick
  */
-public class UnprocessableEntityException extends RequestException {
+public final class UnprocessableEntityException extends RequestException {
 
     public UnprocessableEntityException(final CustomException exception) {
         super(exception);
