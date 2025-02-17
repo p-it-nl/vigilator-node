@@ -16,19 +16,26 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 /**
- * The InternalResource class is a monitored resource that is monitored
- * internally on a server. It is not available on the internet and only
- * accessible on the server it is running on. It therefor will only share its
- * updates with the monitor via an OnboardResource.
+ * Warnings that can occur in a resource
  *
- * @see OnboardResource
  * @author Patrick
  */
-public class InternalResource extends MonitoredResource {
+public class Warning {
 
-    @Override
-    protected void updateStatus() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static final String WARNING = "Warning: %s";
+
+    /**
+     * Format a warning
+     *
+     * @param message the warning to format
+     * @param args the arguments to use
+     * @return the formatted string (unchanged if no arguments provided or
+     * string had no placeholders)
+     */
+    public static String withArgs(String message, final Object... args) {
+        if (args != null) {
+            message = message.formatted(args);
+        }
+        return message;
     }
-
 }
