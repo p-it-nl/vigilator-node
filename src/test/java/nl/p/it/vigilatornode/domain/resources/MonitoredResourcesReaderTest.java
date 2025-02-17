@@ -40,7 +40,7 @@ public class MonitoredResourcesReaderTest {
     private static final String FOLDER_INCORRECT = "test-incorrect-files";
     private static final String FOLDER_CORRECT = "test-correct-files";
     private static final String PATH_TO_RESOURCES = "src/test/resources/";
-    private static final String FIRST_INCORRECT_MESSAGE = "Incorrect resource file: inproperformat.conf, error: Unexpected resource type: NameOfTheResource, expected is either: ExposedResource, OnboardResource or InternalResource";
+    private static final String FIRST_INCORRECT_MESSAGE = "Incorrect resource file: inproperformat.conf, line 2, error: Unexpected resource type: NameOfTheResource, expected is either: ExposedResource, OnboardResource or InternalResource";
     private static final Set<String> correctNames = Set.of("ResourceOne", "ResourceTwo", "ResourceThree");
 
     private MonitoredResourcesReader classUnderTest;

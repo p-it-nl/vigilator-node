@@ -90,4 +90,12 @@ public abstract class MonitoredResource {
     public MonitoredResourceConfig getConfig() {
         return config;
     }
+
+    @Override
+    public String toString() {
+        return "MonitoredResource{"
+                + "name=" + name
+                + ", config=" + config
+                + ", parts=" + parts + '}';
+    }
 }

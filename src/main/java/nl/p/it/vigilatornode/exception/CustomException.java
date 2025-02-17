@@ -47,7 +47,7 @@ public enum CustomException {
             not be accessed, validate the location is correct and the application 
             is permitted to access the location"""),
     DIRECTORY_DOES_NOT_EXIST("The specified directory: %s does not exist"),
-    INVALID_RESOURCE_FILE("Incorrect resource file: %s, error: %s"),
+    INVALID_RESOURCE_FILE("Incorrect resource file: %s, line %s, error: %s"),
     OUT_OF_CONTEXT_RESOURCE_NAME("Resource name given outside the context of a resource"),
     TO_DEEP_TABBING("Unexpected character detected, tab depth deeper then expected"),
     UNEXPECTED_RESOURCE("Unexpected resource type: %s, expected is either: ExposedResource, OnboardResource or InternalResource");

@@ -41,6 +41,7 @@ public class NodeConfig {
     private String allowedHeaders;
     private String resourceFilesLocation;
     private String logfile;
+    private int defaultUpdateFrequency;
 
     private static NodeConfig instance;
 
@@ -213,6 +214,22 @@ public class NodeConfig {
     }
 
     /**
+     * @param defaultUpdateFrequency the default frequency to set for the
+     * monitor to be sending monitoring requests
+     */
+    public void setDefaultUpdateFrequency(final int defaultUpdateFrequency) {
+        this.defaultUpdateFrequency = defaultUpdateFrequency;
+    }
+
+    /**
+     * @return defaultUpdateFrequency the default frequency of the monitor
+     * sending monitoring requests
+     */
+    public int getDefaultUpdateFrequency() {
+        return defaultUpdateFrequency;
+    }
+
+    /**
      * Get a thread pool executor for the http server
      * <p>
      * starting with {corePoolSize} core pool size, having 1 to
@@ -236,6 +253,25 @@ public class NodeConfig {
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
+    /**
+     * Get a thread pool executor for internal processes
+     * <p>
+     * having 1 worker thread where each thread is never killed having a fixed
+     * queue of maximum 100000, where excess tasks are rejected by
+     * CallerRunsPolicy @see
+     * java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy</p>
+     * <p>
+     * Tasks are guaranteed to execute sequentially, and no more than one task
+     * will be active at any given time</p>
+     *
+     * @return the thread pool executor
+     */
+    public ThreadPoolExecutor getSingleThreadExecutor() {
+        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(100000),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
     @Override
     public String toString() {
         return "NodeConfig{"
@@ -247,7 +283,8 @@ public class NodeConfig {
                 + ", allowedMethods=" + allowedMethods
                 + ", allowedHeaders=" + allowedHeaders
                 + ", resourceFilesLocation=" + resourceFilesLocation
-                + ", logfile= " + logfile + '}';
+                + ", logfile=" + logfile
+                + ", defaultUpdateFrequency=" + defaultUpdateFrequency + '}';
     }
 
     private void read(final String environment) throws UnstartableException {

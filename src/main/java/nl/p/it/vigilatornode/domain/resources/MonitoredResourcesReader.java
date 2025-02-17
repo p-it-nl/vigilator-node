@@ -86,7 +86,7 @@ public class MonitoredResourcesReader {
                     try (InputStream resourceFileStream = new FileInputStream(entry)) {
                         read(resourceFileStream);
                     } catch (IncorrectResourceFileException ex) {
-                        throw new IncorrectResourceFileException(CustomException.INVALID_RESOURCE_FILE, entry.getName(), ex.getMessage());
+                        throw new IncorrectResourceFileException(CustomException.INVALID_RESOURCE_FILE, entry.getName(), ex.getLine(),ex.getMessage());
                     } catch (IOException ex) {
                         LOGGER.log(ERROR, "Not able to read resource files in {0}, exception: {1}", resourcesFilesLocation, ex);
                         throw new IncorrectResourceFileException(CustomException.COULD_NOT_READ_RESOURCE_FILES);
@@ -106,7 +106,7 @@ public class MonitoredResourcesReader {
         int buffSize = 1000;
         byte[] buffer = new byte[buffSize];// Size matters but 1 kb is reasonble to start with, optimizing later
         int depth = 0;
-        int line = 1;
+        int line = 0;
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             while (resourceFileStream.read(buffer) > 0) {
                 for (byte b : buffer) {// FUTURE_WORK: This works with ASCII maybe not unicode?
@@ -121,7 +121,7 @@ public class MonitoredResourcesReader {
                             line++;
                             if (output.size() > 1) {
                                 String entry = new String(output.toByteArray());
-                                referenceToResource(entry, depth);
+                                referenceToResource(entry, depth, line);
                             } else {
                                 // ignoring empty line
                             }
@@ -137,21 +137,22 @@ public class MonitoredResourcesReader {
                         }
                     }
                 }
+                buffer = new byte[buffSize];
             }
             if (output.size() > 0) {
                 String entry = new String(output.toByteArray());
-                referenceToResource(entry, depth);
+                referenceToResource(entry, depth, line);
             }
         }
     }
 
-    private void referenceToResource(final String entry, final int depth) throws IncorrectResourceFileException {
+    private void referenceToResource(final String entry, final int depth, final int line) throws IncorrectResourceFileException {
         switch (depth) {
             case DEPTH_RESOURCE ->
-                construct(entry);
+                construct(entry, line);
             case DEPTH_RESOURCE_NAME -> {
                 if (current == null) {
-                    throw new IncorrectResourceFileException(CustomException.OUT_OF_CONTEXT_RESOURCE_NAME);
+                    throw new IncorrectResourceFileException(CustomException.OUT_OF_CONTEXT_RESOURCE_NAME, line);
                 }
                 current.setName(entry);
             }
@@ -162,11 +163,11 @@ public class MonitoredResourcesReader {
             case DEPTH_RESOURCE_PART_ITEM ->
                 decorate(entry);
             default ->
-                throw new IncorrectResourceFileException(CustomException.TO_DEEP_TABBING);
+                throw new IncorrectResourceFileException(CustomException.TO_DEEP_TABBING, line);
         }
     }
 
-    private void construct(final String type) throws IncorrectResourceFileException {
+    private void construct(final String type, final int line) throws IncorrectResourceFileException {
         switch (type) {
             case RESOURCE_EXPOSED ->
                 current = new ExposedResource();
@@ -174,8 +175,11 @@ public class MonitoredResourcesReader {
                 current = new OnboardResource();
             case RESOURCE_INTERNAL ->
                 current = new InternalResource();
-            default ->
-                throw new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE, type);
+            default -> {
+                IncorrectResourceFileException ex = new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE, type);
+                ex.setLine(line);
+                throw ex;
+            }
         }
 
         if (current != null) {
