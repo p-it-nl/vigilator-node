@@ -44,6 +44,7 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
 
         private byte[] data;
         private int take;
+        private String url;
         private final Instant timestamp;
 
         State(final byte[] data) {
@@ -70,8 +71,24 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
         this.state.take = take;
     }
 
+    public void url(final String url) {
+        this.state.url = url;
+    }
+
+    public int getTake() {
+        return this.state.take;
+    }
+
+    public String getUrl() {
+        return this.state.url;
+    }
+
     public Instant getSince() {
         return this.state.timestamp;
+    }
+
+    public boolean hasData() {
+        return this.state.data != null && this.state.data.length > 0;
     }
 
     @Override

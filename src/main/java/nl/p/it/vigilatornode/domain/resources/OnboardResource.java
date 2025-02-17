@@ -27,7 +27,7 @@ package nl.p.it.vigilatornode.domain.resources;
 public class OnboardResource extends MonitoredResource {
 
     @Override
-    protected void updateStatus() {
+    public void updateStatus() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

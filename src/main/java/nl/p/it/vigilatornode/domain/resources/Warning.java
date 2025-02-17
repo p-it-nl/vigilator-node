@@ -16,7 +16,9 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 /**
- * Warnings that can occur in a resource
+ * Warning that can occur in a resource. These warning are human readable
+ * entries that might be visible to the user. When something results in a
+ * warning is configured in the resource configuration
  *
  * @author Patrick
  */
