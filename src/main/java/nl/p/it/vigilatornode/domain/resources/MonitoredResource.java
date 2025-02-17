@@ -15,7 +15,9 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,13 +27,19 @@ import java.util.Map;
  */
 public abstract class MonitoredResource {
 
+    protected boolean healthy;
+    protected final MonitoredResourceConfig config;
+    protected final Map<String, MonitoredPart> parts;
+    protected final List<String> errors;
+    protected final List<String> warnings;
+
     private String name;
-    private final MonitoredResourceConfig config;
-    private final Map<String, MonitoredPart> parts;
 
     public MonitoredResource() {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
+        errors = new ArrayList<>();
+        warnings = new ArrayList<>();
     }
 
     /**

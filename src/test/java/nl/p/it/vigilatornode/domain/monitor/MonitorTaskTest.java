@@ -51,6 +51,11 @@ public class MonitorTaskTest {
     // FUTURE_WORK: add tests that validated simulated monitoring
     private class MockResource extends MonitoredResource {
 
+        @Override
+        protected void updateStatus() {
+            // mocking
+        }
+
     }
 
     private Notifier mock() {

@@ -25,6 +25,10 @@ import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 public class ExposedResource extends MonitoredResource {
 
     private OutgoingClient client;
+    private String resourceMonitorEndpoint;
+
+    private static final String CONFIG_WEB = "Web";
+    private static final String KEY_URL = "url";
 
     /**
      * Connect the exposed resource to a outgoing client. This will be used to
@@ -44,6 +48,29 @@ public class ExposedResource extends MonitoredResource {
      */
     @Override
     protected void updateStatus() {
-        
+        if (resourceMonitorEndpoint == null) {
+            retrieveUpdateFromResource(resourceMonitorEndpoint);
+        } else {
+            resourceMonitorEndpoint = config.getEndpoint();
+        }
+
+        MonitoredPart webPart = parts.get(CONFIG_WEB);
+        if (webPart != null) {
+            String webUrl = webPart.getItems().get(KEY_URL);
+            if (webUrl != null && !webUrl.isEmpty()) {
+                retrieveUpdateFromResource(webUrl);
+            } else {
+                healthy = false;
+                errors.add(Error.NO_WEB_URL);
+            }
+        } else {
+            // resource does not require web availability checks
+        }
+
+        //finaliseUpdate();
+    }
+
+    private void retrieveUpdateFromResource(final String url) {
+
     }
 }
