@@ -24,27 +24,19 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
 /**
  * Base monitored resource
  *
- * FUTURE_WORK: maybe add healthy / errors / warnings to the monitored data
- * instead
- *
  * @author Patrick
  */
 public abstract class MonitoredResource {
 
     protected int take;
     protected String name;
-    protected boolean healthy;
     protected final MonitoredResourceConfig config;
     protected final Map<String, MonitoredPart> parts;
-    protected final List<String> errors;
-    protected final List<String> warnings;
     protected final List<MonitoredData> data;
 
     public MonitoredResource() {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
-        errors = new ArrayList<>();
-        warnings = new ArrayList<>();
         data = new ArrayList<>();
     }
 
@@ -109,17 +101,6 @@ public abstract class MonitoredResource {
      * Update the status of the monitored resources
      */
     public abstract void updateStatus();
-
-    /**
-     * Reset the health determining values, this is done just prior to
-     * reevaluation
-     */
-    protected void resetValues() {
-        healthy = true;
-        errors.clear();
-        warnings.clear();
-        take++;
-    }
 
     @Override
     public String toString() {

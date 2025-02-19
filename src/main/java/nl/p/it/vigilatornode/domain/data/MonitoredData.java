@@ -18,6 +18,8 @@ package nl.p.it.vigilatornode.domain.data;
 import java.io.Serializable;
 import java.lang.ref.Cleaner;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data that has been observed, meaning it has been received, understood and is
@@ -38,7 +40,11 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
      * memory data, preventing memory exhaustion and helps with graceful clean
      * up after breaking exceptions or exhausted number of attempts to recover
      * from a bad situation. By storing carefully, the application can get away
-     * with attempting to collect vital monitoring data more rigoriously
+     * with attempting to collect vital monitoring data more rigorously
+     *
+     * FUTURE_WORK: maybe change usage to clean the data and keep the rest after
+     * the monitored data has been validated since then the data is no longer
+     * required since the data has been validated already
      */
     static class State<T> implements Runnable {
 
@@ -46,10 +52,14 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
         private int take;
         private String url;
         private final Instant timestamp;
+        private final List<String> errors;
+        private final List<String> warnings;
 
         State(final byte[] data) {
             this.data = data;
             this.timestamp = Instant.now();
+            this.errors = new ArrayList<>();
+            this.warnings = new ArrayList<>();
         }
 
         @Override
@@ -89,6 +99,26 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
 
     public boolean hasData() {
         return this.state.data != null && this.state.data.length > 0;
+    }
+
+    public void addError(final String error) {
+        this.state.errors.add(error);
+    }
+
+    public void addWarning(final String warning) {
+        this.state.warnings.add(warning);
+    }
+
+    public List<String> getErrors() {
+        return this.state.errors;
+    }
+
+    public List<String> getWarnings() {
+        return this.state.warnings;
+    }
+
+    public boolean isHealthy() {
+        return this.state.errors.isEmpty();
     }
 
     @Override

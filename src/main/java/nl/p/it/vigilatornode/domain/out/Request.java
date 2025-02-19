@@ -58,7 +58,9 @@ public class Request implements Runnable {
             byte[] responseData = readResponse(
                     client.send(request, HttpResponse.BodyHandlers.ofByteArray()));
             if (responseData != null) {
-                acceptor.accept(new MonitoredData(responseData));
+                MonitoredData result = new MonitoredData(responseData);
+                result.url(request.uri().toString());
+                acceptor.accept(result);
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
             }
@@ -68,8 +70,10 @@ public class Request implements Runnable {
             LOGGER.log(ERROR, "Request got interrupted: {1}", ex);
             Thread.currentThread().interrupt();
         }
-
-        acceptor.accept(new MonitoredData(new byte[0]));
+        
+        MonitoredData result = new MonitoredData(new byte[0]);
+        result.url(request.uri().toString());
+        acceptor.accept(result);
     }
 
     private byte[] readResponse(final HttpResponse<byte[]> response) throws HttpClientException {

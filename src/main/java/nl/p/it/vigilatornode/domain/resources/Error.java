@@ -29,6 +29,8 @@ public class Error {
     public static final String ERROR = "Error: %s";
     public static final String NO_WEB_URL = "item: Web, no web url provided";
     public static final String NO_RESPONE = "Failed to get response for resource: %s on url: %s, see stacktrace for details";
+    public static final String EMPTY_RESPONSE = "Empty response received from resource: %s on url: %s";
+    public static final String NOT_VALID_JSON = "Response for resource: %s is not valid JSON with message: %s";
 
     /**
      * Format a warning
