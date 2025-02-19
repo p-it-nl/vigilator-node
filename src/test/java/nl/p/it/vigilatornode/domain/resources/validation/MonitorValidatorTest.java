@@ -120,6 +120,18 @@ public class MonitorValidatorTest {
     }
 
     @Test
+    public void testValidateWithValidJSONResult() {
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
     public void testValidateWithoutParts() {
         MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
         Map<String, MonitoredPart> parts = null;
@@ -146,7 +158,7 @@ public class MonitorValidatorTest {
     private MonitoredData getResultWith(final String data) {
         MonitoredData monitoredData = new MonitoredData(data.getBytes());
         monitoredData.url(PART_URL);
-        
+
         return monitoredData;
     }
 
