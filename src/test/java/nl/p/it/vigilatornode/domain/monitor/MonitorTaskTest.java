@@ -52,7 +52,7 @@ public class MonitorTaskTest {
     private class MockResource extends MonitoredResource {
 
         @Override
-        protected void updateStatus() {
+        public void updateStatus() {
             // mocking
         }
 

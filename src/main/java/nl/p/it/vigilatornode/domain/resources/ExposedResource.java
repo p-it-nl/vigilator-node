@@ -20,6 +20,9 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.exception.HttpClientException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * The ExposedResource class is a monitored resource available via internet
@@ -31,10 +34,16 @@ public class ExposedResource extends MonitoredResource {
     private OutgoingClient client;
     private String resourceMonitorEndpoint;
 
+    private final MonitorValidator monitorValidator;
+
     private static final String CONFIG_WEB = "Web";
     private static final String KEY_URL = "url";
 
     private static final System.Logger LOGGER = System.getLogger(ExposedResource.class.getName());
+
+    public ExposedResource() {
+        this.monitorValidator = new MonitorValidator();
+    }
 
     /**
      * Connect the exposed resource to a outgoing client. This will be used to
@@ -54,10 +63,9 @@ public class ExposedResource extends MonitoredResource {
      */
     @Override
     public void updateStatus() {
-        if (resourceMonitorEndpoint == null) {
+        resourceMonitorEndpoint = (resourceMonitorEndpoint != null ? resourceMonitorEndpoint : config.getEndpoint());
+        if (resourceMonitorEndpoint != null) {
             retrieveUpdateFromResource(resourceMonitorEndpoint);
-        } else {
-            resourceMonitorEndpoint = config.getEndpoint();
         }
 
         MonitoredPart webPart = parts.get(CONFIG_WEB);
@@ -66,8 +74,11 @@ public class ExposedResource extends MonitoredResource {
             if (webUrl != null && !webUrl.isEmpty()) {
                 retrieveUpdateFromResource(webUrl);
             } else {
-                healthy = false;
-                errors.add(Error.NO_WEB_URL);
+                take++;
+                MonitoredData result = new MonitoredData(new byte[0]);
+                result.addError(Error.NO_WEB_URL);
+                result.label(take);
+                data.add(result);
             }
         } else {
             // resource does not require web availability checks
@@ -82,35 +93,30 @@ public class ExposedResource extends MonitoredResource {
         } catch (HttpClientException ex) {
             LOGGER.log(ERROR, "Excepting during request from {0} with "
                     + "exception being: {1}", getClass().getSimpleName(), ex);
-            healthy = false;
-            errors.add(Error.withArgs(Error.NO_RESPONE, name, url));
+            take++;
+            MonitoredData result = new MonitoredData(ex.getMessage().getBytes());
+            result.addError(Error.withArgs(Error.NO_RESPONE, name, url));
+            result.label(take);
+            result.url(url);
+            data.add(result);
         }
     }
 
     private Acceptor<MonitoredData> getAcceptor() {
         return (final MonitoredData result) -> {
-            resetValues();
+            take++;
             result.label(take);
             data.add(result);
 
             if (result.hasData()) {
                 if (resourceMonitorEndpoint.equals(result.getUrl())) {
-                    validateMonitorReply(result);
+                    monitorValidator.validate(result, parts, name);
                 } else {
-                    validateWebReply(result);
+                    monitorValidator.validateWebReply(result, name);
                 }
             } else {
-                healthy = false;
-                errors.add(Error.withArgs(Error.NO_RESPONE, name, result.getUrl()));
+                result.addError(Error.withArgs(Error.NO_RESPONE, name, result.getUrl()));
             }
         };
-    }
-
-    private void validateMonitorReply(final MonitoredData result) {
-
-    }
-
-    private void validateWebReply(final MonitoredData result) {
-
     }
 }

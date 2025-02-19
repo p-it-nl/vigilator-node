@@ -52,6 +52,12 @@
             <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency><!-- FUTURE_WORK: will be replaced with own JSON serializer later -->
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20250107</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
