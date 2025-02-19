@@ -55,6 +55,12 @@ public class Monitor {
 
     /**
      * Start monitoring the resources known to this monitor
+     *
+     * FUTURE_WORK: When the need arises, its might be worth while to start
+     * monitor tasks per X resources. Currently one task will handle the list of
+     * resources. This does not mean that the monitor task will validate the
+     * resources one by one. It will schedule requests to the outgoing client
+     * which will run request at parelel
      */
     public void start() {
         LOGGER.log(INFO, "Starting monitor process");
