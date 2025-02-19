@@ -62,8 +62,13 @@ public class MonitorValidator {
             try {
                 if (result.hasData()) {
                     JSONObject document = new JSONObject(new String(result.getData()));
-                    JSONArray statusItems = (JSONArray) document.get(KEY_JSON_STATUS);
+                    JSONArray status = (JSONArray) document.get(KEY_JSON_STATUS);
 
+                    for (Object entry : status) {
+                        JSONObject statusEntry = (JSONObject) entry;
+                        
+                        
+                    }
                 } else {
                     LOGGER.log(ERROR, "Empty response received in response from {0}", name);
                     result.addError(Error.withArgs(Error.EMPTY_RESPONSE, name, result.getUrl()));
