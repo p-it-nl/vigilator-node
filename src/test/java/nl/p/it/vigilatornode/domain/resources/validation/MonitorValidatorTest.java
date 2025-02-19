@@ -44,6 +44,11 @@ public class MonitorValidatorTest {
     private static final String ITEM_CONDITION = "mock";
 
     private static final String RESPONSE_WITH_EMPTY_JSON_OBJECT = "{}";
+    private static final String RESPONSE_WITH_EMPTY_STATUS = """
+        {
+            "environment": "prod",
+            "status": []
+        }""";
     private static final String RESPONSE_WITH_ONE_STATUS_COMPONENT = """
         {
             "environment": "prod",
@@ -104,7 +109,7 @@ public class MonitorValidatorTest {
     }
 
     @Test
-    public void testValidateWithEmptyJSONResult() {
+    public void testValidateWithEmptyJSON() {
         String expected = Error.NOT_VALID_JSON.formatted(NAME, JSON_EXCEPTION_STATUS_NOT_FOUND);
         MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_JSON_OBJECT);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
@@ -120,7 +125,23 @@ public class MonitorValidatorTest {
     }
 
     @Test
-    public void testValidateWithValidJSONResult() {
+    public void testValidateWithJSONContainingEmptyStatus() {
+        String expected = Error.NOT_VALID_JSON.formatted(NAME, JSON_EXCEPTION_STATUS_NOT_FOUND);
+        MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_STATUS);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertFalse(result.isHealthy());
+        List<String> errors = result.getErrors();
+        assertFalse(errors.isEmpty());
+        assertTrue(result.getWarnings().isEmpty());
+        assertTrue(errors.contains(expected));
+    }
+
+    @Test
+    public void testValidateWithValidJSON() {
         MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
