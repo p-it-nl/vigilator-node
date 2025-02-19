@@ -36,7 +36,7 @@ public class MonitorValidatorTest {
     private MonitorValidator classUnderTest;
 
     private static final String NAME = "mock";
-    private static final String PART_NAME = "mock";
+    private static final String PART_NAME = "HttpServer";
     private static final String PART_URL = "mock";
     private static final String KEY_JSON_NAME = "name";
     private static final String KEY_JSON_ITEMS = "items";
@@ -210,7 +210,7 @@ public class MonitorValidatorTest {
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
-
+        
         assertTrue(result.isHealthy());
         assertTrue(result.getErrors().isEmpty());
         List<String> warnings = result.getWarnings();
