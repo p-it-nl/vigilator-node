@@ -113,6 +113,36 @@ public class MonitorValidatorTest {
                 }
             ]
         }""";
+    private static final String RESPONSE_WITH_STATUS_COMPONENTS = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "name": "HttpServer",
+                    "items": {
+                        "threads active": "1",
+                        "status": "ACTIVE",
+                        "threads completed": "82388",
+                        "maximum pool size": "100",
+                        "threads queued": "0",
+                        "pool size": "10"
+                    },
+                    "datetime": "1739957108"
+                },
+                {
+                    "name": "HttpServer",
+                    "items": {
+                        "threads active": "0",
+                        "threads completed": "0",
+                        "maximum pool size": "1",
+                        "threads queued": "0",
+                        "status": "ACTIVE",
+                        "pool size": "0"
+                    },
+                    "datetime": "1739957108"
+                }
+            ]
+        }""";
     private static final String RESPONSE_WITH_STATUS_COMPONENT_FAILING_CONDITIONS = """
         {
             "environment": "prod",
@@ -255,6 +285,18 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithValidJSON() {
         MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
+    public void testValidateWithJSONHavingTwoStatusComponents() {
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENTS);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
 
