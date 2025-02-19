@@ -55,9 +55,7 @@ public class WaitTaskTest {
     private Notifier mock() {
         return () -> {
             int timePassed = (int) (start - System.currentTimeMillis()) * -1;
-            
-            System.out.println(timePassed);
-            
+
             assertTrue(timePassed > WAIT_TIME);
             assertTrue(timePassed < WAIT_TIME + GRACEFULL_PERIOD);
         };
