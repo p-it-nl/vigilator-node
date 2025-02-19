@@ -113,6 +113,24 @@ public class MonitorValidatorTest {
                 }
             ]
         }""";
+    private static final String RESPONSE_WITH_STATUS_COMPONENT_FAILING_CONDITIONS = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "name": "HttpServer",
+                    "items": {
+                        "threads active": "1",
+                        "status": "ACTIVE",
+                        "threads completed": "82388",
+                        "maximum pool size": "100",
+                        "threads queued": "0",
+                        "pool size": "10"
+                    },
+                    "datetime": "1739957108"
+                }
+            ]
+        }""";
     private static final String JSON_EXCEPTION_STATUS_NOT_FOUND = "JSONObject[\"status\"] not found.";
 
     @BeforeEach
@@ -210,7 +228,7 @@ public class MonitorValidatorTest {
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
-        
+
         assertTrue(result.isHealthy());
         assertTrue(result.getErrors().isEmpty());
         List<String> warnings = result.getWarnings();
@@ -244,6 +262,18 @@ public class MonitorValidatorTest {
 
         assertTrue(result.isHealthy());
         assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
+    public void testValidateWithConditionsFailing() {
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENT_FAILING_CONDITIONS);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertFalse(result.isHealthy());
+        System.out.println(result.getErrors());
     }
 
     @Test
