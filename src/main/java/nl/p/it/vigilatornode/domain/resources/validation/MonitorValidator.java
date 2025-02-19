@@ -17,10 +17,12 @@ package nl.p.it.vigilatornode.domain.resources.validation;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.WARNING;
+import java.util.Iterator;
 import java.util.Map;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.resources.Error;
 import nl.p.it.vigilatornode.domain.resources.MonitoredPart;
+import nl.p.it.vigilatornode.domain.resources.Warning;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,15 +34,18 @@ import org.json.JSONObject;
  */
 public class MonitorValidator {
 
+    private final ConditionValidator conditionValidator;
+
     private static final String KEY_JSON_STATUS = "status";
     private static final String KEY_JSON_NAME = "name";
     private static final String KEY_JSON_ITEMS = "items";
     private static final String KEY_JSON_DATETIME = "datetime";
+    private static final char WARNING_INDICATION = 'W';
 
     private static final System.Logger LOGGER = System.getLogger(MonitorValidator.class.getName());
 
     public MonitorValidator() {
-        // new ConditionValidator
+        conditionValidator = new ConditionValidator();
     }
 
     /**
@@ -74,59 +79,24 @@ public class MonitorValidator {
         } else {
             LOGGER.log(WARNING, "validate called without monitored data");
         }
-        /*
-        QJsonObject json = document.object();
-        QJsonArray status = json.value(KEY_JSON_STATUS).toArray();
-
-        for (const QJsonValue & v : status
-        
-        
-            ){
-                QJsonObject statusEntry = v.toObject();
-            std::string name = statusEntry.value(KEY_JSON_NAME).toString().toStdString();
-            if (parts.find(name) != parts.end()) {
-                MonitoredPart * part = parts[name];
-                std::map < std::string
-                , std::string > validationItems = part -> getItems();
-                QJsonObject items = statusEntry.value(KEY_JSON_ITEMS).toObject();
-                foreach(
-                const QString key, items
-                .keys()
-                
-                
-                    ){
-                        validateItem(key, items, validationItems, name);
-                }
-
-                validateDatetimeCondition(part, statusEntry);
-            } else {
-                // Not something the resource is interested in monitoring, skipping
-            }
-        }
-         */
     }
 
     public void validateWebReply(MonitoredData result, String name) {
 
-        /*
-         * std::string data = repliedData->getData();
-         * MonitoredPart* webPart = parts[CONFIG_WEB];
-         * 
-         * std::string title = webPart->getItems()[KEY_TITLE];
-         *  if(!title.empty()) {
-         *     std::string needle = HTML_TITLE + title;
-         *      std::size_t found = data.find(needle);
-         *      if(found == std::string::npos) {
-         *          errors.push_back("Web reply for url " + webPart->getItems()[KEY_URL] + " failed to validate title");
-         *          healthy = false;
-         *      }
-         * } else if(data.length() < 3) {
-         *      errors.push_back("Web reply for url " + webPart->getItems()[KEY_URL] + " resulted in empty response");
-         *      healthy = false;
-         * }
-         */
     }
 
+    /**
+     * FUTURE_WORK: Currently the response is compared to what is expected (the
+     * parts) this allows the parts to be configured for multiple different
+     * responses of a resource and allows to configure resources preemptively.
+     *
+     * How ever, this comes at the cost of not being able to validate mandatory
+     * status objects and missing data
+     *
+     * @param result the result of a monitoring request
+     * @param parts the validation parts
+     * @param name the name of the resource
+     */
     private void validateJSON(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
         JSONObject document = new JSONObject(new String(result.getData()));
         JSONArray status = (JSONArray) document.get(KEY_JSON_STATUS);
@@ -134,12 +104,73 @@ public class MonitorValidator {
         if (status.isEmpty()) {
             LOGGER.log(ERROR, "Empty status object received in response from {0}", name);
             result.addError(Error.withArgs(Error.EMPTY_STATUS, name, result.getUrl()));
-
         }
-        for (Object entry : status) {
-            JSONObject statusEntry = (JSONObject) entry;
 
-            //  String name = statusEntry.
+        if (parts != null) {
+            for (Object entry : status) {
+                JSONObject statusEntry = (JSONObject) entry;
+                if (statusEntry != null) {
+                    validateStatusEntry(statusEntry, result, parts, name);
+                } else {
+                    // ignoring 
+                }
+            }
+        } else {
+            // if there are no parts to monitor for the resource, validating that 
+            // there is a reply, has json and contains a status item is enough*/
+        }
+    }
+
+    private void validateStatusEntry(final JSONObject statusEntry, final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
+        if (statusEntry.has(KEY_JSON_NAME)) {
+            String partName = statusEntry.getString(KEY_JSON_NAME);
+            if (parts.containsKey(partName)) {
+                MonitoredPart part = parts.get(partName);
+                if (statusEntry.has(KEY_JSON_ITEMS)) {
+                    Map<String, String> validationItems = part.getItems();
+                    JSONObject items = statusEntry.getJSONObject(KEY_JSON_ITEMS);
+                    Iterator<String> keys = items.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        validateItem(key, items, validationItems, partName, result);
+                    }
+                } else {
+                    result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_ITEMS));
+                }
+
+                if (statusEntry.has(KEY_JSON_DATETIME)) {
+                    // TODO
+                } else {
+                    result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_DATETIME));
+                }
+            } else {
+                // Not something the resource is interested in monitoring, skipping
+            }
+        } else {
+            result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_NAME));
+        }
+    }
+
+    private void validateItem(final String key, final JSONObject items, final Map<String, String> validationItems, final String partName, final MonitoredData result) {
+        if (validationItems.containsKey(key)) {
+            String value = items.getString(key);
+            String condition = validationItems.get(key);
+            if (conditionValidator.validateMeetsCriteria(value, condition)) {
+                handlePotentialError(
+                        Error.withArgs(Error.POTENTIAL_VALUE_ERROR, value, condition, partName),
+                        condition, result);
+            }
+        } else {
+            // Not something the resource is interested in monitoring, skipping
+        }
+    }
+
+    private void handlePotentialError(final String message, final String condition, final MonitoredData result) {
+        char endingChar = condition.charAt((condition.length() - 1));
+        if (WARNING_INDICATION == endingChar) {
+            result.addWarning(message);
+        } else {
+            result.addError(message);
         }
     }
 
