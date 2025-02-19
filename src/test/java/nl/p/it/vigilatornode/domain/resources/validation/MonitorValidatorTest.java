@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.p.it.vigilatornode.domain.resources;
+package nl.p.it.vigilatornode.domain.resources.validation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
+import nl.p.it.vigilatornode.domain.resources.Error;
+import nl.p.it.vigilatornode.domain.resources.MonitoredPart;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,18 +36,12 @@ public class MonitorValidatorTest {
 
     private static final String NAME = "mock";
     private static final String PART_NAME = "mock";
+    private static final String PART_URL = "mock";
 
     private static final String ITEM_ONE_KEY = "status";
-    private static final String ITEM_ONE_CONDITION = "!ACTIVE";
-    private static final String ITEM_ONE_CORRECT = "ACTIVE";
-    private static final String ITEM_ONE_INCORRECT = "NOT_ACTIVE";
     private static final String ITEM_TWO_KEY = "pool size";
-    private static final String ITEM_TWO_CONDITION = "> 50";
-    private static final String ITEM_TWO_CORRECT = "10";
-    private static final String ITEM_TWO_INCORRECT = "51";
     private static final String ITEM_DATETIME_KEY = "datetime";
-    private static final String ITEM_DATETIME_CONDITION = "< 5min";
-    private static final long ITEM_DATETIME_INCORRECT = 1739957108; // 19/02/2025 10:25
+    private static final String ITEM_CONDITION = "mock";
 
     private static final String RESPONSE_WITH_EMPTY_JSON_OBJECT = "{}";
     private static final String RESPONSE_WITH_ONE_STATUS_COMPONENT = """
@@ -56,16 +52,17 @@ public class MonitorValidatorTest {
                     "name": "HttpServer",
                     "items": {
                         "threads active": "1",
-                        "status": "%s",
+                        "status": "ACTIVE",
                         "threads completed": "82388",
                         "maximum pool size": "100",
                         "threads queued": "0",
-                        "pool size": "%s"
+                        "pool size": "10"
                     },
-                    "datetime": "%s"
+                    "datetime": "1739957108"
                 }
             ]
         }""";
+    private static final String JSON_EXCEPTION_STATUS_NOT_FOUND = "JSONObject[\"status\"] not found.";
 
     @BeforeEach
     public void setUp() {
@@ -98,7 +95,7 @@ public class MonitorValidatorTest {
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
-        
+
         assertFalse(result.isHealthy());
         List<String> errors = result.getErrors();
         assertFalse(errors.isEmpty());
@@ -108,24 +105,23 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithEmptyJSONResult() {
-        String expected = Error.EMPTY_RESPONSE.formatted(NAME, null);
-        MonitoredData result = new MonitoredData(RESPONSE_WITH_EMPTY_JSON_OBJECT.getBytes());
+        String expected = Error.NOT_VALID_JSON.formatted(NAME, JSON_EXCEPTION_STATUS_NOT_FOUND);
+        MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_JSON_OBJECT);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
-        System.out.println(errors);
+
         assertFalse(result.isHealthy());
         List<String> errors = result.getErrors();
         assertFalse(errors.isEmpty());
         assertTrue(result.getWarnings().isEmpty());
         assertTrue(errors.contains(expected));
     }
-    
+
     @Test
     public void testValidateWithoutParts() {
-        MonitoredData result = new MonitoredData(getResponseWith(
-                RESPONSE_WITH_ONE_STATUS_COMPONENT, true, true, true));
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
         Map<String, MonitoredPart> parts = null;
         String name = NAME;
 
@@ -137,8 +133,7 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithoutName() {
-        MonitoredData result = new MonitoredData(getResponseWith(
-                RESPONSE_WITH_ONE_STATUS_COMPONENT, true, true, true));
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = null;
 
@@ -148,29 +143,28 @@ public class MonitorValidatorTest {
         assertTrue(result.getWarnings().isEmpty());
     }
 
-    private byte[] getResponseWith(final String base, final boolean correctItemOne, final boolean correctItemTwo, final boolean correctDatetimeValue) {
-        String itemOne = (correctItemOne ? ITEM_ONE_CORRECT : ITEM_ONE_INCORRECT);
-        String itemTwo = (correctItemTwo ? ITEM_TWO_CORRECT : ITEM_TWO_INCORRECT);
-        long datetime = (correctDatetimeValue ? System.currentTimeMillis() : ITEM_DATETIME_INCORRECT);
-
-        return base.formatted(itemOne, itemTwo, datetime).getBytes();
+    private MonitoredData getResultWith(final String data) {
+        MonitoredData monitoredData = new MonitoredData(data.getBytes());
+        monitoredData.url(PART_URL);
+        
+        return monitoredData;
     }
 
     private Map<String, MonitoredPart> getPartsWith(final boolean itemOne, final boolean itemTwo, final boolean datetimeValue) {
         Map<String, MonitoredPart> parts = new HashMap<>();
         MonitoredPart part = new MonitoredPart();
         if (itemOne) {
-            part.addItem(ITEM_ONE_KEY, ITEM_ONE_CONDITION);
+            part.addItem(ITEM_ONE_KEY, ITEM_CONDITION);
             parts.put(PART_NAME, part);
         }
         if (itemTwo) {
             part = new MonitoredPart();
-            part.addItem(ITEM_TWO_KEY, ITEM_TWO_CONDITION);
+            part.addItem(ITEM_TWO_KEY, ITEM_CONDITION);
             parts.put(PART_NAME, part);
         }
         if (datetimeValue) {
             part = new MonitoredPart();
-            part.addItem(ITEM_DATETIME_KEY, ITEM_DATETIME_CONDITION);
+            part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION);
             parts.put(PART_NAME, part);
         }
 

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.p.it.vigilatornode.domain.resources;
+package nl.p.it.vigilatornode.domain.resources.validation;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.WARNING;
 import java.util.Map;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
+import nl.p.it.vigilatornode.domain.resources.Error;
+import nl.p.it.vigilatornode.domain.resources.MonitoredPart;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,7 +108,7 @@ public class MonitorValidator {
          */
     }
 
-    void validateWebReply(MonitoredData result, String name) {
+    public void validateWebReply(MonitoredData result, String name) {
 
         /*
          * std::string data = repliedData->getData();
