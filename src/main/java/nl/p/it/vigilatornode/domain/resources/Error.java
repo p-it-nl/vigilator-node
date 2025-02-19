@@ -32,7 +32,7 @@ public class Error {
     public static final String EMPTY_RESPONSE = "Empty response received from resource: %s on url: %s";
     public static final String EMPTY_STATUS = "Empty status object received from resource: %s on url: %s";
     public static final String NOT_VALID_JSON = "Response for resource: %s is not valid JSON with message: %s";
-
+    public static final String POTENTIAL_VALUE_ERROR = "Received value: %s for '%s' in entry: %s indicating issues with the resource.";
     /**
      * Format a warning
      *

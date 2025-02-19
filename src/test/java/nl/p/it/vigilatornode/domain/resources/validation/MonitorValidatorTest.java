@@ -21,6 +21,7 @@ import java.util.Map;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.resources.Error;
 import nl.p.it.vigilatornode.domain.resources.MonitoredPart;
+import nl.p.it.vigilatornode.domain.resources.Warning;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +38,9 @@ public class MonitorValidatorTest {
     private static final String NAME = "mock";
     private static final String PART_NAME = "mock";
     private static final String PART_URL = "mock";
+    private static final String KEY_JSON_NAME = "name";
+    private static final String KEY_JSON_ITEMS = "items";
+    private static final String KEY_JSON_DATETIME = "datetime";
 
     private static final String ITEM_ONE_KEY = "status";
     private static final String ITEM_TWO_KEY = "pool size";
@@ -48,6 +52,48 @@ public class MonitorValidatorTest {
         {
             "environment": "prod",
             "status": []
+        }""";
+    private static final String RESPONSE_WITH_STATUS_NOT_HAVING_NAME = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "mock": "HttpServer",
+                    "items": {
+                        "threads active": "1",
+                        "status": "ACTIVE"
+                    },
+                    "datetime": "1739957108"
+                }
+            ]
+        }""";
+    private static final String RESPONSE_WITH_STATUS_NOT_HAVING_ITEMS = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "name": "HttpServer",
+                    "mock": {
+                        "threads active": "1",
+                        "status": "ACTIVE"
+                    },
+                    "datetime": "1739957108"
+                }
+            ]
+        }""";
+    private static final String RESPONSE_WITH_STATUS_NOT_HAVING_DATETIME = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "name": "HttpServer",
+                    "items": {
+                        "threads active": "1",
+                        "status": "ACTIVE"
+                    },
+                    "mock": "1739957108"
+                }
+            ]
         }""";
     private static final String RESPONSE_WITH_ONE_STATUS_COMPONENT = """
         {
@@ -138,6 +184,54 @@ public class MonitorValidatorTest {
         assertFalse(errors.isEmpty());
         assertTrue(result.getWarnings().isEmpty());
         assertTrue(errors.contains(expected));
+    }
+
+    @Test
+    public void testValidateWithJSONStatusObjectNotHavingNameAttribute() {
+        String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_NAME);
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_NAME);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getErrors().isEmpty());
+        List<String> warnings = result.getWarnings();
+        assertFalse(warnings.isEmpty());
+        assertTrue(warnings.contains(expected));
+    }
+
+    @Test
+    public void testValidateWithJSONStatusObjectNotHavingItemsAttribute() {
+        String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_ITEMS);
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_ITEMS);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getErrors().isEmpty());
+        List<String> warnings = result.getWarnings();
+        assertFalse(warnings.isEmpty());
+        assertTrue(warnings.contains(expected));
+    }
+
+    @Test
+    public void testValidateWithJSONStatusObjectNotHavingDatetimeAttribute() {
+        String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_DATETIME);
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_DATETIME);
+        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getErrors().isEmpty());
+        List<String> warnings = result.getWarnings();
+        assertFalse(warnings.isEmpty());
+        assertTrue(warnings.contains(expected));
     }
 
     @Test

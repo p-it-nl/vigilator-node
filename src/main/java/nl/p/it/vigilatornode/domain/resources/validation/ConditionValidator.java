@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nl.p.it.vigilatornode.domain.resources.validation;
 
 /**
  * Validator for conditions
- * 
+ *
  * @author Patrick
  */
 public class ConditionValidator {
+
+    public boolean validateMeetsCriteria(final String value, final String condition) {
+
+        return true;
+    }
 
 }

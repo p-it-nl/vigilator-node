@@ -25,6 +25,7 @@ package nl.p.it.vigilatornode.domain.resources;
 public class Warning {
 
     public static final String WARNING = "Warning: %s";
+    public static final String STATUS_MISSING_FIELD = "A reply for resource: %s is missing a status object field: %s";
 
     /**
      * Format a warning
