@@ -61,15 +61,7 @@ public class MonitorValidator {
         if (result != null) {
             try {
                 if (result.hasData()) {
-                    JSONObject document = new JSONObject(new String(result.getData()));
-                    JSONArray status = (JSONArray) document.get(KEY_JSON_STATUS);
-
-                    for (Object entry : status) {
-                        JSONObject statusEntry = (JSONObject) entry;
-                        
-                      //  String name = statusEntry.
-                        
-                    }
+                    validateJSON(result, parts, name);
                 } else {
                     LOGGER.log(ERROR, "Empty response received in response from {0}", name);
                     result.addError(Error.withArgs(Error.EMPTY_RESPONSE, name, result.getUrl()));
@@ -133,6 +125,22 @@ public class MonitorValidator {
          *      healthy = false;
          * }
          */
+    }
+
+    private void validateJSON(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
+        JSONObject document = new JSONObject(new String(result.getData()));
+        JSONArray status = (JSONArray) document.get(KEY_JSON_STATUS);
+
+        if (status.isEmpty()) {
+            LOGGER.log(ERROR, "Empty status object received in response from {0}", name);
+            result.addError(Error.withArgs(Error.EMPTY_STATUS, name, result.getUrl()));
+
+        }
+        for (Object entry : status) {
+            JSONObject statusEntry = (JSONObject) entry;
+
+            //  String name = statusEntry.
+        }
     }
 
 }

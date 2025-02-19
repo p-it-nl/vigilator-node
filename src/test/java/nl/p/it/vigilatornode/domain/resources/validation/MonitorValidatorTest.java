@@ -126,7 +126,7 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithJSONContainingEmptyStatus() {
-        String expected = Error.NOT_VALID_JSON.formatted(NAME, JSON_EXCEPTION_STATUS_NOT_FOUND);
+        String expected = Error.EMPTY_STATUS.formatted(NAME, PART_URL);
         MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_STATUS);
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
