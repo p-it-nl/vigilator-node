@@ -67,6 +67,7 @@ public class MonitorValidator {
                     for (Object entry : status) {
                         JSONObject statusEntry = (JSONObject) entry;
                         
+                      //  String name = statusEntry.
                         
                     }
                 } else {
