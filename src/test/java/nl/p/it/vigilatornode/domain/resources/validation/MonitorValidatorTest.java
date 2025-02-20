@@ -45,7 +45,9 @@ public class MonitorValidatorTest {
     private static final String ITEM_ONE_KEY = "status";
     private static final String ITEM_TWO_KEY = "pool size";
     private static final String ITEM_DATETIME_KEY = "datetime";
-    private static final String ITEM_CONDITION = "mock";
+    private static final String ITEM_CONDITION_ONE = "== ACTIVE";
+    private static final String ITEM_CONDITION_TWO = "== 10";
+    private static final String ITEM_CONDITION_DATETIME = "< 5min";
 
     private static final String RESPONSE_WITH_EMPTY_JSON_OBJECT = "{}";
     private static final String RESPONSE_WITH_EMPTY_STATUS = """
@@ -316,6 +318,8 @@ public class MonitorValidatorTest {
 
         assertFalse(result.isHealthy());
         System.out.println(result.getErrors());
+        
+        // TODO: validate errors
     }
 
     @Test
@@ -353,20 +357,16 @@ public class MonitorValidatorTest {
         Map<String, MonitoredPart> parts = new HashMap<>();
         MonitoredPart part = new MonitoredPart();
         if (itemOne) {
-            part.addItem(ITEM_ONE_KEY, ITEM_CONDITION);
-            parts.put(PART_NAME, part);
+            part.addItem(ITEM_ONE_KEY, ITEM_CONDITION_ONE);
         }
         if (itemTwo) {
-            part = new MonitoredPart();
-            part.addItem(ITEM_TWO_KEY, ITEM_CONDITION);
-            parts.put(PART_NAME, part);
+            part.addItem(ITEM_TWO_KEY, ITEM_CONDITION_TWO);
         }
         if (datetimeValue) {
-            part = new MonitoredPart();
-            part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION);
-            parts.put(PART_NAME, part);
+            part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION_DATETIME);
         }
-
+        parts.put(PART_NAME, part);
+        
         return parts;
     }
 }
