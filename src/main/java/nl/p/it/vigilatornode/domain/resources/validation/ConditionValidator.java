@@ -15,6 +15,12 @@
  */
 package nl.p.it.vigilatornode.domain.resources.validation;
 
+import java.time.Instant;
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.WARNING;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static nl.p.it.vigilatornode.domain.resources.validation.ConditionType.*;
+
 /**
  * Validator for conditions
  *
@@ -22,9 +28,150 @@ package nl.p.it.vigilatornode.domain.resources.validation;
  */
 public class ConditionValidator {
 
-    public boolean validateMeetsCriteria(final String value, final String condition) {
+    private static final char IS = '=';
+    private static final char EXCLAMATION_MARK = '!';
+    private static final char BIGGER_THEN = '>';
+    private static final char SMALLER_THEN = '<';
+    private static final int NPOS = -1;
+    private static final String MIN = "min";
 
-        return true;
+    private static final System.Logger LOGGER = System.getLogger(ConditionValidator.class.getName());
+
+    /**
+     * @param value the value to validate
+     * @param condition the condition to validate the value against
+     * @return whether the value matches the condition
+     */
+    public boolean validateMeetsCriteria(final String value, final String condition) {
+        if (condition != null && !condition.isEmpty()) {
+            int valueSize = (value == null ? 0 : value.length());
+            int conditionSize = condition.length();
+            int conditionStart = Character.isSpaceChar(condition.charAt(0)) ? 1 : 0;
+            char firstChar = condition.charAt(conditionStart);
+
+            switch (firstChar) {
+                case EXCLAMATION_MARK -> {
+                    return matchesIsNotCondition(valueSize, conditionSize, conditionStart, value, condition);
+                }
+                case BIGGER_THEN -> {
+                    return matchesValueCondition(valueSize, conditionSize, value, condition, BIGGER);
+                }
+                case SMALLER_THEN -> {
+                    return matchesValueCondition(valueSize, conditionSize, value, condition, SMALLER);
+                }
+                case IS -> {
+                    if (IS == condition.charAt(1)) {
+                        return matchesIsEqualCondition(valueSize, conditionSize, conditionStart, value, condition);
+                    }
+                }
+                default -> {
+                    int exclMarkPos = condition.indexOf(EXCLAMATION_MARK);
+                    if (NPOS != exclMarkPos) {
+                        return matchesIsNotCondition(valueSize, conditionSize, exclMarkPos, value, condition);
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
+    private boolean matchesIsNotCondition(final int valueSize, final int conditionSize, final int positionInCondition, final String value, final String condition) {
+        if (valueSize == 0) {
+            return true;
+        }
+
+        String valueToMatch = value.substring(positionInCondition, valueSize);
+        String conditionToMatch = condition.substring((positionInCondition + 1), conditionSize);
+
+        return !valueToMatch.equals(conditionToMatch);
+    }
+
+    private boolean matchesIsEqualCondition(final int valueSize, final int conditionSize, final int positionInCondition, final String value, final String condition) {
+        if (valueSize == 0) {
+            return false;
+        }
+
+        String valueToMatch = value.substring(positionInCondition, valueSize);
+        String conditionToMatch = condition.substring((positionInCondition + 2), conditionSize);
+        conditionToMatch = trimFirstSpaceIfExists(conditionToMatch);
+
+        return valueToMatch.equals(conditionToMatch);
+    }
+
+    private boolean matchesValueCondition(final int valueSize, final int conditionSize, final String value, final String condition, final ConditionType type) {
+        if (valueSize == 0) {
+            return false;
+        }
+
+        String valueToMatch = value.substring(0, valueSize);
+        String conditionToMatch = condition.substring(1, conditionSize);
+        conditionToMatch = trimFirstSpaceIfExists(conditionToMatch);
+        try {
+            int startPositionTemporalIndicator = condition.indexOf(MIN);
+            if (NPOS != startPositionTemporalIndicator) {
+                String temporalAmountString = condition.substring(0, startPositionTemporalIndicator);
+                temporalAmountString = temporalAmountString.substring(1);
+                temporalAmountString = trimFirstSpaceIfExists(temporalAmountString);
+                int temporalAmount = Integer.parseInt(temporalAmountString.trim());
+
+                String temporalType = condition.substring(startPositionTemporalIndicator, conditionSize);
+
+                if (BIGGER == type) {
+                    return matchesDateCondition(value, temporalAmount, temporalType, AFTER);
+                } else {
+                    return matchesDateCondition(value, temporalAmount, temporalType, BEFORE);
+                }
+            } else {
+                int parsedValue = Integer.parseInt(valueToMatch);
+                int parsedCondition = Integer.parseInt(conditionToMatch);
+
+                if (BIGGER == type) {
+                    return parsedValue > parsedCondition;
+                } else {
+                    return parsedValue < parsedCondition;
+                }
+            }
+        } catch (NumberFormatException ex) {
+            LOGGER.log(WARNING, "String could not be parsed to integer, exception: ", ex);
+            return false;
+        }
+    }
+
+    /**
+     * FUTURE_WORK: add more temporal types
+     *
+     * @param value the value to match
+     * @param temporalAmount the amount to match against
+     * @param temporalType the temporal type (currently supports: `min`)
+     * @param type the condition type (BEFORE / AFTER)
+     * @return whether value matches
+     */
+    private boolean matchesDateCondition(final String value, final int temporalAmount, final String temporalType, final ConditionType type) {
+        try {
+            long datetimeValue = Long.parseLong(value);
+            if (datetimeValue > 1000000000) {
+                long conditionLimit = Instant.now().plus(temporalAmount, MINUTES).getEpochSecond();
+                if (BEFORE == type) {
+                    return datetimeValue < conditionLimit;
+                } else {
+                    return datetimeValue > conditionLimit;
+                }
+            } else {
+                LOGGER.log(DEBUG, "Not a valid timestamp format: {0}", datetimeValue);
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            LOGGER.log(WARNING, "String could not be parsed to long, exception: {0}", ex);
+            return false;
+        }
+    }
+
+    private String trimFirstSpaceIfExists(final String value) {
+        if (Character.isSpaceChar(value.charAt(0))) {
+            return value.substring(1, value.length());
+        } else {
+            return value;
+        }
+    }
 }
