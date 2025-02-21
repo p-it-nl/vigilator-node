@@ -43,6 +43,7 @@ public class MonitorValidator {
     private static final String KEY_CONFIG_WEB = "Web";
     private static final String KEY_TITLE = "title";
     private static final char WARNING_INDICATION = 'W';
+    private static final String HTML_TITLE = "<title>";
 
     private static final System.Logger LOGGER = System.getLogger(MonitorValidator.class.getName());
 
@@ -81,18 +82,33 @@ public class MonitorValidator {
         }
     }
 
+    /**
+     * Determine if the replied data provides any content and if required,
+     * validate the title IF title is required, currently expects an HTML
+     * response, meaning it will check for the title in a title element, else
+     * any response could be accepted as valid, even error pages
+     *
+     * @param result the result
+     * @param parts the parts to validate against
+     * @param name the name of the resource being validated (this is used for
+     * logging and error information)
+     */
     public void validateWebReply(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
         if (result != null && result.hasData() && parts != null) {
+            String data = new String(result.getData());
             MonitoredPart webPart = parts.get(KEY_CONFIG_WEB);
             String title = webPart.getItems().get(KEY_TITLE);
             if (title != null && !title.isEmpty()) {
-
+                String needle = HTML_TITLE + title;
+                if (!data.contains(needle)) {
+                    result.addError(Error.withArgs(Error.WEB_VALIDATION_FAILED, result.getUrl()));
+                }
             } else {
                 result.addWarning(Warning.withArgs(Warning.WEB_VALIDATION_MISSING_TITLE, result.getUrl()));
             }
         } else if (result != null && !result.hasData()) {
             LOGGER.log(ERROR, "Empty response received in response from {0}", name);
-            result.addError(Error.withArgs(Error.EMPTY_RESPONSE, name, result.getUrl()));
+            result.addError(Error.withArgs(Error.WEB_VALIDATION_EMPTY, result.getUrl()));
         } else {
             LOGGER.log(WARNING, "validate called without monitored data");
         }
