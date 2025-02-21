@@ -317,9 +317,10 @@ public class MonitorValidatorTest {
         classUnderTest.validate(result, parts, name);
 
         assertFalse(result.isHealthy());
-        System.out.println(result.getErrors());
-        
-        // TODO: validate errors
+        List<String> errors = result.getErrors();
+        assertTrue(errors.get(0).contains(ITEM_CONDITION_ONE));
+        assertTrue(errors.get(1).contains(ITEM_CONDITION_TWO));
+        assertTrue(errors.get(2).contains(ITEM_CONDITION_DATETIME));
     }
 
     @Test
@@ -366,7 +367,7 @@ public class MonitorValidatorTest {
             part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION_DATETIME);
         }
         parts.put(PART_NAME, part);
-        
+
         return parts;
     }
 }
