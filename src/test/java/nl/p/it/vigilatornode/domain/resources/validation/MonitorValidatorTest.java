@@ -425,11 +425,12 @@ public class MonitorValidatorTest {
     public void testValidateWebReplyWithValidResponseMissingTitleCondition() {
         String expected = Warning.WEB_VALIDATION_MISSING_TITLE.formatted(PART_URL);
         MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_VALID.getBytes());
+        result.url(PART_URL);
         Map<String, MonitoredPart> parts = getPartsWithWeb(false);
         String name = NAME;
 
         classUnderTest.validateWebReply(result, parts, name);
-
+        
         assertTrue(result.isHealthy());
         assertTrue(result.getWarnings().contains(expected));
     }
@@ -438,6 +439,7 @@ public class MonitorValidatorTest {
     public void testValidateWebReplyWithInvalidResponse() {
         String expected = Error.WEB_VALIDATION_FAILED.formatted(PART_URL);
         MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_INVALID.getBytes());
+        result.url(PART_URL);
         Map<String, MonitoredPart> parts = getPartsWithWeb(true);
         String name = NAME;
 
