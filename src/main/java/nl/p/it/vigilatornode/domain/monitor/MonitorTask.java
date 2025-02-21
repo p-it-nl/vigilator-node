@@ -38,7 +38,7 @@ public class MonitorTask implements Runnable {
     @Override
     public void run() {
         
-        
+        // if is active
         
         if (notifier != null) {
             notifier.doNotify();
