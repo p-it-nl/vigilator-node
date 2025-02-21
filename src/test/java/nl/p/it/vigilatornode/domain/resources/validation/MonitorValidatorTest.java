@@ -348,6 +348,13 @@ public class MonitorValidatorTest {
         assertTrue(result.getWarnings().isEmpty());
     }
 
+    @Test
+    public void testValidateWebReplyWithoutValues() {
+        MonitoredData result = null;
+        
+        classUnderTest.validateWebReply(result, NAME);
+    }
+    
     private MonitoredData getResultWith(final String data) {
         MonitoredData monitoredData = new MonitoredData(data.getBytes());
         monitoredData.url(PART_URL);
