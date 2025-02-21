@@ -26,6 +26,10 @@ public class Warning {
 
     public static final String WARNING = "Warning: %s";
     public static final String STATUS_MISSING_FIELD = "A reply for resource: %s is missing a status object field: %s";
+    public static final String WEB_VALIDATION_MISSING_TITLE = """
+        The web reply validation for url: %s received a response but no title is 
+        provided in the configuration to validate this response. The response might 
+        not be what is expected""";
 
     /**
      * Format a warning
