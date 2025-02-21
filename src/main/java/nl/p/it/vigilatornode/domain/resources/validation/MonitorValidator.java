@@ -40,8 +40,9 @@ public class MonitorValidator {
     private static final String KEY_JSON_NAME = "name";
     private static final String KEY_JSON_ITEMS = "items";
     private static final String KEY_JSON_DATETIME = "datetime";
-    private static final char WARNING_INDICATION = 'W';
     private static final String KEY_CONFIG_WEB = "Web";
+    private static final String KEY_TITLE = "title";
+    private static final char WARNING_INDICATION = 'W';
 
     private static final System.Logger LOGGER = System.getLogger(MonitorValidator.class.getName());
 
@@ -81,7 +82,20 @@ public class MonitorValidator {
     }
 
     public void validateWebReply(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
-        // TODO: implement this
+        if (result != null && result.hasData()) {
+            MonitoredPart webPart = parts.get(KEY_CONFIG_WEB);
+            String title = webPart.getItems().get(KEY_TITLE);
+            if(title != null && !title.isEmpty()) {
+                
+            } else {
+                result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_ITEMS));
+            }
+        } else if (result != null) {
+            LOGGER.log(ERROR, "Empty response received in response from {0}", name);
+            result.addError(Error.withArgs(Error.EMPTY_RESPONSE, name, result.getUrl()));
+        } else {
+            LOGGER.log(WARNING, "validate called without monitored data");
+        }
     }
 
     /**
