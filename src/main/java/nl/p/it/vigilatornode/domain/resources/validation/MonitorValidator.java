@@ -88,7 +88,7 @@ public class MonitorValidator {
             if(title != null && !title.isEmpty()) {
                 
             } else {
-                result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_ITEMS));
+                result.addWarning(Warning.withArgs(Warning.WEB_VALIDATION_MISSING_TITLE, result.getUrl()));
             }
         } else if (result != null) {
             LOGGER.log(ERROR, "Empty response received in response from {0}", name);
