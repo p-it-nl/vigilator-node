@@ -26,11 +26,10 @@ import java.util.List;
  * ready to be stored somewhere persisting (or not).
  *
  * @author Patrick
- * @param <T> type of data
  */
-public class MonitoredData<T> implements AutoCloseable, Serializable {
+public class MonitoredData implements AutoCloseable, Serializable {
 
-    private final State<T> state;
+    private final State state;
     private final Cleaner.Cleanable cleanable;
 
     private static final Cleaner cleaner = Cleaner.create();
@@ -46,7 +45,7 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
      * the monitored data has been validated since then the data is no longer
      * required since the data has been validated already
      */
-    static class State<T> implements Runnable {
+    static class State implements Runnable {
 
         private byte[] data;
         private int take;
@@ -69,7 +68,7 @@ public class MonitoredData<T> implements AutoCloseable, Serializable {
     }
 
     public MonitoredData(final byte[] data) {
-        this.state = new State<>(data);
+        this.state = new State(data);
         this.cleanable = cleaner.register(this, state);
     }
 

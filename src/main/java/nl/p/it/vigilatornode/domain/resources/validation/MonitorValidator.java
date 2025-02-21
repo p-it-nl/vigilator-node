@@ -41,6 +41,7 @@ public class MonitorValidator {
     private static final String KEY_JSON_ITEMS = "items";
     private static final String KEY_JSON_DATETIME = "datetime";
     private static final char WARNING_INDICATION = 'W';
+    private static final String KEY_CONFIG_WEB = "Web";
 
     private static final System.Logger LOGGER = System.getLogger(MonitorValidator.class.getName());
 
@@ -79,7 +80,7 @@ public class MonitorValidator {
         }
     }
 
-    public void validateWebReply(MonitoredData result, String name) {
+    public void validateWebReply(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
         // TODO: implement this
     }
 

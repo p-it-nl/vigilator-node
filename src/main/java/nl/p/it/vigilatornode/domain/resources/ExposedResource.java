@@ -113,7 +113,7 @@ public class ExposedResource extends MonitoredResource {
                 if (resourceMonitorEndpoint.equals(result.getUrl())) {
                     monitorValidator.validate(result, parts, name);
                 } else {
-                    monitorValidator.validateWebReply(result, name);
+                    monitorValidator.validateWebReply(result, parts, name);
                 }
             } else {
                 result.addError(Error.withArgs(Error.NO_RESPONE, name, result.getUrl()));
