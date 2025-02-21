@@ -82,15 +82,15 @@ public class MonitorValidator {
     }
 
     public void validateWebReply(final MonitoredData result, final Map<String, MonitoredPart> parts, final String name) {
-        if (result != null && result.hasData()) {
+        if (result != null && result.hasData() && parts != null) {
             MonitoredPart webPart = parts.get(KEY_CONFIG_WEB);
             String title = webPart.getItems().get(KEY_TITLE);
-            if(title != null && !title.isEmpty()) {
-                
+            if (title != null && !title.isEmpty()) {
+
             } else {
                 result.addWarning(Warning.withArgs(Warning.WEB_VALIDATION_MISSING_TITLE, result.getUrl()));
             }
-        } else if (result != null) {
+        } else if (result != null && !result.hasData()) {
             LOGGER.log(ERROR, "Empty response received in response from {0}", name);
             result.addError(Error.withArgs(Error.EMPTY_RESPONSE, name, result.getUrl()));
         } else {
