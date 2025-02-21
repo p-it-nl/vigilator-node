@@ -33,6 +33,7 @@ public class Error {
     public static final String EMPTY_STATUS = "Empty status object received from resource: %s on url: %s";
     public static final String NOT_VALID_JSON = "Response for resource: %s is not valid JSON with message: %s";
     public static final String POTENTIAL_VALUE_ERROR = "Received value: %s for '%s' in entry: %s indicating issues with the resource.";
+    public static final String EXCEEDS_TIME_CONSTRAINTS = "Received update data exceeds specified time constraints in object: %s";
     /**
      * Format a warning
      *

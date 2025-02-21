@@ -55,8 +55,6 @@ public class MonitorValidator {
      * Not using Jackson since object deserialization is costly and we have not
      * fully settled on a response data structure
      *
-     * TODO: Move to its own class and unit test
-     *
      * @param result the result to validate
      * @param parts the parts to validate against
      * @param name the name of the resource being validated (this is used for
@@ -139,7 +137,7 @@ public class MonitorValidator {
                 }
 
                 if (statusEntry.has(KEY_JSON_DATETIME)) {
-                    // TODO: continue here
+                    validateDatetimeCondition(part, statusEntry.getJSONObject(KEY_JSON_DATETIME), partName, result);
                 } else {
                     result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_DATETIME));
                 }
@@ -162,6 +160,22 @@ public class MonitorValidator {
             }
         } else {
             // Not something the resource is interested in monitoring, skipping
+        }
+    }
+
+    private void validateDatetimeCondition(final MonitoredPart part, final JSONObject statusEntry, final String partName, final MonitoredData result) {
+        String datetimeCondition = part.getDatetimeCondition();
+        if (datetimeCondition != null && !datetimeCondition.isEmpty()) {
+            String datetimeLastUpdated = statusEntry.getString(KEY_JSON_DATETIME);
+            if (conditionValidator.validateMeetsCriteria(datetimeLastUpdated, datetimeCondition)) {
+                handlePotentialError(
+                        Error.withArgs(Error.EXCEEDS_TIME_CONSTRAINTS, partName),
+                        datetimeCondition, result);
+            } else {
+                // the update is timely
+            }
+        } else {
+            // for this monitored part, datetime of the update is not required to be within boundaries
         }
     }
 
