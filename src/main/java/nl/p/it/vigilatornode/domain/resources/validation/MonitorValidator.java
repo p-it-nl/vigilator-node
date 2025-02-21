@@ -126,11 +126,9 @@ public class MonitorValidator {
             String partName = statusEntry.getString(KEY_JSON_NAME);
             if (parts.containsKey(partName)) {
                 MonitoredPart part = parts.get(partName);
-                System.out.println(part);
                 if (statusEntry.has(KEY_JSON_ITEMS)) {
                     Map<String, String> validationItems = part.getItems();
                     JSONObject items = statusEntry.getJSONObject(KEY_JSON_ITEMS);
-                    System.out.println(items);
                     Iterator<String> keys = items.keys();
                     while (keys.hasNext()) {
                         String key = keys.next();
@@ -157,8 +155,6 @@ public class MonitorValidator {
         if (validationItems.containsKey(key)) {
             String value = items.getString(key);
             String condition = validationItems.get(key);
-            System.out.println(value);
-           // System.out.println(condition);
             if (conditionValidator.validateMeetsCriteria(value, condition)) {
                 handlePotentialError(
                         Error.withArgs(Error.POTENTIAL_VALUE_ERROR, value, condition, partName),
