@@ -137,7 +137,7 @@ public class MonitorValidator {
                 }
 
                 if (statusEntry.has(KEY_JSON_DATETIME)) {
-                    validateDatetimeCondition(part, statusEntry.getJSONObject(KEY_JSON_DATETIME), partName, result);
+                    validateDatetimeCondition(part, statusEntry, partName, result);
                 } else {
                     result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_DATETIME));
                 }

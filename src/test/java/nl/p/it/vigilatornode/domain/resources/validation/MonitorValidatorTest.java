@@ -45,10 +45,11 @@ public class MonitorValidatorTest {
     private static final String ITEM_ONE_KEY = "status";
     private static final String ITEM_TWO_KEY = "pool size";
     private static final String ITEM_DATETIME_KEY = "datetime";
-    private static final String ITEM_CONDITION_ONE = "== ACTIVE";
-    private static final String ITEM_CONDITION_TWO = "== 10";
+    private static final String ITEM_CONDITION_ONE = "!ACTIVE";
+    private static final String ITEM_CONDITION_TWO = "> 50";
     private static final String ITEM_CONDITION_DATETIME = "< 5min";
-
+    private static final String INDICATION_DATETIME_CONDITION_FAILED
+            = "Received update data exceeds specified time constraints in object";
     private static final String RESPONSE_WITH_EMPTY_JSON_OBJECT = "{}";
     private static final String RESPONSE_WITH_EMPTY_STATUS = """
         {
@@ -79,7 +80,7 @@ public class MonitorValidatorTest {
                         "threads active": "1",
                         "status": "ACTIVE"
                     },
-                    "datetime": "1739957108"
+                    "datetime": "%s"
                 }
             ]
         }""";
@@ -111,7 +112,7 @@ public class MonitorValidatorTest {
                         "threads queued": "0",
                         "pool size": "10"
                     },
-                    "datetime": "1739957108"
+                    "datetime": "%s"
                 }
             ]
         }""";
@@ -129,7 +130,7 @@ public class MonitorValidatorTest {
                         "threads queued": "0",
                         "pool size": "10"
                     },
-                    "datetime": "1739957108"
+                    "datetime": "%s"
                 },
                 {
                     "name": "HttpServer",
@@ -141,7 +142,7 @@ public class MonitorValidatorTest {
                         "status": "ACTIVE",
                         "pool size": "0"
                     },
-                    "datetime": "1739957108"
+                    "datetime": "%s"
                 }
             ]
         }""";
@@ -153,11 +154,11 @@ public class MonitorValidatorTest {
                     "name": "HttpServer",
                     "items": {
                         "threads active": "1",
-                        "status": "ACTIVE",
+                        "status": "NOT_ACTIVE",
                         "threads completed": "82388",
                         "maximum pool size": "100",
                         "threads queued": "0",
-                        "pool size": "10"
+                        "pool size": "51"
                     },
                     "datetime": "1739957108"
                 }
@@ -255,7 +256,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithJSONStatusObjectNotHavingItemsAttribute() {
         String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_ITEMS);
-        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_ITEMS);
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_ITEMS.formatted(System.currentTimeMillis()));
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
 
@@ -286,7 +287,7 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithValidJSON() {
-        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT.formatted(System.currentTimeMillis()));
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
 
@@ -298,7 +299,7 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithJSONHavingTwoStatusComponents() {
-        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENTS);
+        MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENTS.formatted(System.currentTimeMillis(), System.currentTimeMillis()));
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = NAME;
 
@@ -320,12 +321,12 @@ public class MonitorValidatorTest {
         List<String> errors = result.getErrors();
         assertTrue(errors.get(0).contains(ITEM_CONDITION_ONE));
         assertTrue(errors.get(1).contains(ITEM_CONDITION_TWO));
-        assertTrue(errors.get(2).contains(ITEM_CONDITION_DATETIME));
+        assertTrue(errors.get(2).contains(INDICATION_DATETIME_CONDITION_FAILED));
     }
 
     @Test
     public void testValidateWithoutParts() {
-        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT.formatted(System.currentTimeMillis()));
         Map<String, MonitoredPart> parts = null;
         String name = NAME;
 
@@ -337,7 +338,7 @@ public class MonitorValidatorTest {
 
     @Test
     public void testValidateWithoutName() {
-        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT);
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT.formatted(System.currentTimeMillis()));
         Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
         String name = null;
 
