@@ -60,7 +60,7 @@ public class Monitor {
      * monitor tasks per X resources. Currently one task will handle the list of
      * resources. This does not mean that the monitor task will validate the
      * resources one by one. It will schedule requests to the outgoing client
-     * which will run request at parelel
+     * which will run request at parallel
      */
     public void start() {
         LOGGER.log(INFO, "Starting monitor process");

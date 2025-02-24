@@ -72,16 +72,18 @@ public class MonitorTest {
     @Test
     public void start() throws MonitorException {
         linkThreadpool();
+        when(config.getDefaultUpdateFrequency()).thenReturn(1000);
         Monitor monitor = new Monitor(List.of(resource), config);
 
         assertDoesNotThrow(() -> monitor.start());
-
     }
 
     // TODO: Add tests validating the monitor does start something
+    
     @Test
     public void stop() throws MonitorException {
         linkThreadpool();
+        when(config.getDefaultUpdateFrequency()).thenReturn(1000);
         Monitor monitor = new Monitor(List.of(resource), config);
 
         assertDoesNotThrow(() -> monitor.start());
