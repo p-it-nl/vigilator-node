@@ -37,9 +37,12 @@ public class MonitorTask implements Runnable {
 
     @Override
     public void run() {
-        
-        // if is active
-        
+        if (resources != null) {
+            for (MonitoredResource resource : resources) {
+                System.out.println("ping " + resource.getName());
+            }
+
+        }
         if (notifier != null) {
             notifier.doNotify();
         }
