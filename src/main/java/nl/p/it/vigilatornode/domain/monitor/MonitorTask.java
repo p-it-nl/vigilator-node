@@ -28,8 +28,6 @@ public class MonitorTask implements Runnable {
     private final List<MonitoredResource> resources;
     private final Notifier notifier;
 
-    private static final System.Logger LOGGER = System.getLogger(MonitorTask.class.getName());
-
     public MonitorTask(final List<MonitoredResource> resources, final Notifier notifier) {
         this.resources = resources;
         this.notifier = notifier;
@@ -39,7 +37,7 @@ public class MonitorTask implements Runnable {
     public void run() {
         if (resources != null) {
             for (MonitoredResource resource : resources) {
-                System.out.println("ping " + resource.getName());
+                resource.updateStatus();
             }
 
         }
@@ -47,13 +45,4 @@ public class MonitorTask implements Runnable {
             notifier.doNotify();
         }
     }
-
-    /* TODO: Move this to resource that needs it
-    private Acceptor<MonitoredData> getAcceptor() {
-        return (final MonitoredData data) -> {
-            LOGGER.log(INFO, "Monitor finished request");
-            
-            data.label(take);
-        };
-    }*/
 }

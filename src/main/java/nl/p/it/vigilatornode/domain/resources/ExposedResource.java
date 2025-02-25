@@ -16,14 +16,11 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 import nl.p.it.vigilatornode.domain.resources.validation.MonitorValidator;
-import static java.lang.System.Logger.Level.ERROR;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.exception.HttpClientException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * The ExposedResource class is a monitored resource available via internet
