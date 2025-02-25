@@ -76,21 +76,19 @@ public class MonitorTest {
         Monitor monitor = new Monitor(List.of(resource), config);
 
         assertDoesNotThrow(() -> monitor.start());
+        assertTrue(monitor.isActive());
     }
 
-    // TODO: Add tests validating the monitor does start something
-    
     @Test
     public void stop() throws MonitorException {
         linkThreadpool();
         when(config.getDefaultUpdateFrequency()).thenReturn(1000);
         Monitor monitor = new Monitor(List.of(resource), config);
 
-        assertDoesNotThrow(() -> monitor.start());
-
+        assertDoesNotThrow(() -> monitor.stop());
+        assertFalse(monitor.isActive());
     }
 
-    // TODO: Add tests validating the monitor does stop something
 
     private void linkThreadpool() {   
         when(config.getSingleThreadExecutor()).thenReturn(

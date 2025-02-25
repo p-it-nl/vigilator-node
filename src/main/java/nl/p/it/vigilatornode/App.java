@@ -23,11 +23,11 @@ import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.IncorrectResourceFileException;
 import nl.p.it.vigilatornode.exception.UnstartableException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
-import static java.lang.System.Logger.Level.INFO;
 import java.util.List;
 import nl.p.it.vigilatornode.domain.monitor.Monitor;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.MonitorException;
+import static java.lang.System.Logger.Level.INFO;
 
 /**
  * Initializes the application

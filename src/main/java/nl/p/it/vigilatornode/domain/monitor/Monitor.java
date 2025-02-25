@@ -72,6 +72,13 @@ public class Monitor {
     }
 
     /**
+     * @return whether the monitor is active monitoring
+     */
+    public boolean isActive() {
+        return !executor.isShutdown();
+    }
+    
+    /**
      * Stop the monitor, this gracefully ends active processes and stops
      * executing
      */
