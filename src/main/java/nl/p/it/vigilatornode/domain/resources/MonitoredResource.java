@@ -98,6 +98,13 @@ public abstract class MonitoredResource {
     }
 
     /**
+     * @return the data
+     */
+    public List<MonitoredData> getData() {
+        return data;
+    }
+    
+    /**
      * Update the status of the monitored resources
      */
     public abstract void updateStatus();
