@@ -86,6 +86,13 @@ public class Monitor {
         executor.shutdown();
     }
 
+    /**
+     * @return the monitored resources, with state
+     */
+    public List<MonitoredResource> getResources() {
+        return resources;
+    }
+    
     private Notifier monitorTaskFinished() {
         return () -> timeout();
     }
