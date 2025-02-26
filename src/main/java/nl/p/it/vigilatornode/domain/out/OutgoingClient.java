@@ -92,7 +92,7 @@ public class OutgoingClient {
      */
     public void scheduleRequest(final String url, final Acceptor<MonitoredData> acceptor) throws HttpClientException {
         LOGGER.log(INFO, "Queuing request");
-
+        
         try {
             HttpRequest request = builder.GET()
                     .uri(new URI(url))
@@ -101,7 +101,6 @@ public class OutgoingClient {
 
             executor.submit(new Request(request, acceptor, client));
         } catch (IllegalArgumentException | NullPointerException | URISyntaxException ex) {
-            System.out.println(ex);
             throw new HttpClientException(CustomException.INVALID_URL, url);
         }
     }
