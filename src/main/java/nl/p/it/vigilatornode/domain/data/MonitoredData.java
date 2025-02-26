@@ -65,6 +65,17 @@ public class MonitoredData implements AutoCloseable, Serializable {
         public void run() {
             this.data = null;
         }
+
+        @Override
+        public String toString() {
+            return "State{" 
+                    + "data=" + data.length + " bytes"
+                    + ", take=" + take 
+                    + ", url=" + url 
+                    + ", timestamp=" + timestamp 
+                    + ", errors=" + errors 
+                    + ", warnings=" + warnings + '}';
+        }
     }
 
     public MonitoredData(final byte[] data) {
@@ -123,5 +134,10 @@ public class MonitoredData implements AutoCloseable, Serializable {
     @Override
     public void close() {
         cleanable.clean();
+    }
+
+    @Override
+    public String toString() {
+        return "MonitoredData{" + "state=" + state + '}';
     }
 }

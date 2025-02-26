@@ -37,7 +37,11 @@ public class MonitorTask implements Runnable {
     public void run() {
         if (resources != null) {
             for (MonitoredResource resource : resources) {
-                resource.updateStatus();
+                if (resource.getConfig().isActive()) {
+                    resource.updateStatus();
+                } else {
+                    // only updating resources that are activated to monitor
+                }
             }
 
         }

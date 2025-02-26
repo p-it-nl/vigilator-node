@@ -35,9 +35,9 @@ import nl.p.it.vigilatornode.exception.HttpClientException;
  */
 public class OutgoingClient {
 
+    private HttpClient client;
     private final NodeConfig config;
     private final HttpRequest.Builder builder;
-    private final HttpClient client;
     private final ThreadPoolExecutor executor;
 
     private static OutgoingClient instance;
@@ -70,6 +70,16 @@ public class OutgoingClient {
         }
 
         return instance;
+    }
+
+    /**
+     * Replace the current http client with a different one. This is useful to
+     * unify http clients in other parts of the system with the outgoing client
+     *
+     * @param client the client
+     */
+    public void switchClient(final HttpClient client) {
+        this.client = client;
     }
 
     /**

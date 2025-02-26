@@ -34,6 +34,7 @@ public class ConditionValidator {
     private static final char SMALLER_THEN = '<';
     private static final int NPOS = -1;
     private static final String MIN = "min";
+    private static final char WARNING_INDICATION = 'W';
 
     private static final System.Logger LOGGER = System.getLogger(ConditionValidator.class.getName());
 
@@ -42,8 +43,9 @@ public class ConditionValidator {
      * @param condition the condition to validate the value against
      * @return whether the value matches the condition
      */
-    public boolean validateMeetsCriteria(final String value, final String condition) {
+    public boolean validateMeetsCriteria(final String value, String condition) {
         if (condition != null && !condition.isEmpty()) {
+            condition = trimWarningIfExists(condition);
             int valueSize = (value == null ? 0 : value.length());
             int conditionSize = condition.length();
             int conditionStart = Character.isSpaceChar(condition.charAt(0)) ? 1 : 0;
@@ -173,5 +175,13 @@ public class ConditionValidator {
         } else {
             return value;
         }
+    }
+
+    private String trimWarningIfExists(final String condition) {
+        int end = condition.length() - 1;
+        if (condition.charAt(end) == WARNING_INDICATION) {
+            return condition.substring(0, (end - 1));
+        }
+        return condition;
     }
 }

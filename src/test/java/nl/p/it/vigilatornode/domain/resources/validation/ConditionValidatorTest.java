@@ -86,6 +86,16 @@ public class ConditionValidatorTest {
     }
 
     @Test
+    public void conditionForValueIsNotWithValueBeingUnequalToCondition_withWarningIndicationInCondition() {
+        String value = "mockvalue";
+        String condition = "!value W";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+    
+    @Test
     public void conditionForValueIsNotWithValueBeingUnequalToConditionExpectingNoCapsAndReceivingCaps() {
         String value = "Value";
         String condition = "!value";
@@ -149,6 +159,16 @@ public class ConditionValidatorTest {
     public void conditionForIsEqualToWithEqualValueWithConditionStartingWithASpace() {
         String value = "value";
         String condition = "== value";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsEqualToWithEqualValueWithConditionStartingWithASpace_withWarningIndicationInCondition() {
+        String value = "value";
+        String condition = "== value W";
 
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
@@ -246,6 +266,16 @@ public class ConditionValidatorTest {
     }
 
     @Test
+    public void conditionForIsPartialNotWithValueContinueingAfterValue_withWarningIndicationInCondition() {
+        String value = "value mock mock";
+        String condition = "value !value W";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
     public void conditionForValueIsBiggerThenWithoutAValue() {
         String value = "";
         String condition = "> 80";
@@ -279,6 +309,16 @@ public class ConditionValidatorTest {
     public void conditionForValueIsBiggerThenWithAValueBiggerThenCondition() {
         String value = "88";
         String condition = "> 80";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForValueIsBiggerThenWithAValueBiggerThenCondition_withWarningIndicationInCondition() {
+        String value = "88";
+        String condition = "> 80 W";
 
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
@@ -339,6 +379,16 @@ public class ConditionValidatorTest {
     public void conditionForIsLessThenWithValueBeingLessThenCondition() {
         String value = "20";
         String condition = "< 40";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithValueBeingLessThenCondition_withWarningIndicationInCondition() {
+        String value = "20";
+        String condition = "< 40 W";
 
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
@@ -459,6 +509,16 @@ public class ConditionValidatorTest {
     public void conditionForIsMoreThenGivenMinutesAgoWithTimestampValueBeingAfterCondition() {
         String value = "" + Instant.now().plus(16, MINUTES).getEpochSecond();
         String condition = "> 8min";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsMoreThenGivenMinutesAgoWithTimestampValueBeingAfterCondition_withWarningIndicationInCondition() {
+        String value = "" + Instant.now().plus(16, MINUTES).getEpochSecond();
+        String condition = "> 8min W";
 
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
