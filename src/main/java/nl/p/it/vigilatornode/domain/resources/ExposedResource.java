@@ -105,7 +105,7 @@ public class ExposedResource extends MonitoredResource {
             take++;
             result.label(take);
             data.add(result);
-
+            
             if (result.hasData()) {
                 if (resourceMonitorEndpoint.equals(result.getUrl())) {
                     monitorValidator.validate(result, parts, name);

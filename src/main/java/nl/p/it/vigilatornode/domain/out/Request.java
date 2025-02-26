@@ -61,6 +61,7 @@ public class Request implements Runnable {
                 MonitoredData result = new MonitoredData(responseData);
                 result.url(request.uri().toString());
                 acceptor.accept(result);
+                return;
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
             }

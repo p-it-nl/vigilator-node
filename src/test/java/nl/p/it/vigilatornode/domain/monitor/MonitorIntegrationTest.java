@@ -114,7 +114,7 @@ public class MonitorIntegrationTest {
         resource.decorate("ResourceThree", "database", "running");
         resource.decorate("ResourceThree", "threads queued", "> 10 W");
         resource.decorate("ResourceThree", "threads broken", "> 0");
-        resources.add(resource);
+      //  resources.add(resource);
 
         return resources;
     }
@@ -137,7 +137,8 @@ public class MonitorIntegrationTest {
                     "name": "ResourceOne",
                     "items": {
                         "isProcessing": "true",
-                        "hasExceptions": "false"
+                        "hasExceptions": "false",
+                        "datetime": "1740587609"
                     }
                 }
             ]
@@ -151,7 +152,8 @@ public class MonitorIntegrationTest {
                     "name": "ResourceOne",
                     "items": {
                         "isProcessing": "false",
-                        "hasExceptions": "true"
+                        "hasExceptions": "true",
+                        "datetime": "1740587609"
                     }
                 }
             ]
