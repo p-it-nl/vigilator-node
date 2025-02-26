@@ -101,6 +101,7 @@ public class OutgoingClient {
 
             executor.submit(new Request(request, acceptor, client));
         } catch (IllegalArgumentException | NullPointerException | URISyntaxException ex) {
+            System.out.println(ex);
             throw new HttpClientException(CustomException.INVALID_URL, url);
         }
     }

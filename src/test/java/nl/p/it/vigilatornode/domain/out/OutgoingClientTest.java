@@ -15,6 +15,9 @@
  */
 package nl.p.it.vigilatornode.domain.out;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
@@ -27,6 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for outgoing client
@@ -36,15 +42,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class OutgoingClientTest {
 
-    @Mock
-    private NodeConfig config;
+    private static OutgoingClient classUnderTest;
 
-    private OutgoingClient classUnderTest;
+    private static final String INVALID_URL = "localhost";
+    private static final String URL = "https://localhost.com/somewhere";
 
-    private static final String URL = "https://localhost";
-
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
+        NodeConfig config = mock(NodeConfig.class);
+        when(config.getPoolExecutor()).thenReturn(
+                new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(10)));
         classUnderTest = OutgoingClient.getInstance(config);
     }
 
@@ -74,9 +81,9 @@ public class OutgoingClientTest {
     }
 
     @Test
-    public void scheduleRequestWithUrlAndAcceptor() throws HttpClientException {
+    public void scheduleRequestWithInvalidUrlAndAcceptor() throws HttpClientException {
         CustomException expectedException = CustomException.INVALID_URL;
-        String url = URL;
+        String url = INVALID_URL;
         Acceptor<MonitoredData> acceptor = (MonitoredData data) -> {
         };
 
@@ -84,5 +91,14 @@ public class OutgoingClientTest {
                 () -> classUnderTest.scheduleRequest(url, acceptor));
 
         assertEquals(String.format(expectedException.getMessage(), url), exception.getMessage());
+    }
+
+    @Test
+    public void scheduleRequestWithValidUrlAndAcceptor() throws HttpClientException {
+        String url = URL;
+        Acceptor<MonitoredData> acceptor = (MonitoredData data) -> {
+        };
+
+        assertDoesNotThrow(() -> classUnderTest.scheduleRequest(url, acceptor));
     }
 }
