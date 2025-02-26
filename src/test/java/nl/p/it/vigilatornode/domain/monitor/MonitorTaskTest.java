@@ -27,10 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MonitorTaskTest {
 
-    private static final String ACTIVE = "active";
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
-
     @Test
     public void createMonitorTaskWithoutValues() {
         MonitorTask task = new MonitorTask(null, null);
@@ -47,15 +43,15 @@ public class MonitorTaskTest {
 
     @Test
     public void createMonitorTaskWithoutNotifier() {
-        MonitorTask task = new MonitorTask(List.of(new MockResource(TRUE)), null);
+        MonitorTask task = new MonitorTask(List.of(new MockResource(true)), null);
 
         assertDoesNotThrow(() -> task.run());
     }
 
     @Test
     public void createMonitorTaskWithActiveAndNotActiveResource_expectingOnlyActiveToBeCalled() {
-        MockResource active = new MockResource(TRUE);
-        MockResource inActive = new MockResource(FALSE);
+        MockResource active = new MockResource(true);
+        MockResource inActive = new MockResource(false);
         MonitorTask task = new MonitorTask(List.of(active, inActive), null);
 
         assertDoesNotThrow(() -> task.run());
@@ -68,8 +64,8 @@ public class MonitorTaskTest {
 
         private boolean isCalled;
 
-        public MockResource(final String isActive) {
-            config.set(ACTIVE, isActive);
+        public MockResource(final boolean isActive) {
+            config.setActive(isActive);
         }
 
         @Override

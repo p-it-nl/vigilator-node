@@ -238,6 +238,10 @@ public class MonitorTest {
 
     private class OkResource extends MonitoredResource {
 
+        public OkResource() {
+            this.config.setActive(true);
+        }
+
         @Override
         public void updateStatus() {
             take++;
@@ -248,6 +252,10 @@ public class MonitorTest {
     }
 
     private class ErrorResource extends MonitoredResource {
+
+        public ErrorResource() {
+            this.config.setActive(true);
+        }
 
         @Override
         public void updateStatus() {
@@ -261,6 +269,10 @@ public class MonitorTest {
 
     private class WarningResource extends MonitoredResource {
 
+        public WarningResource() {
+            this.config.setActive(true);
+        }
+
         @Override
         public void updateStatus() {
             take++;
@@ -273,6 +285,10 @@ public class MonitorTest {
 
     private class FlickeringResource extends MonitoredResource {
 
+        public FlickeringResource() {
+            this.config.setActive(true);
+        }
+        
         @Override
         public void updateStatus() {
             take++;
