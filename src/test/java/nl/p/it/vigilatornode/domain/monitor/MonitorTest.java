@@ -21,6 +21,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
+import nl.p.it.vigilatornode.domain.out.OutgoingClient;
+import nl.p.it.vigilatornode.domain.resources.ExposedResource;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
@@ -39,6 +41,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(MockitoExtension.class)
 public class MonitorTest {
+
+    @Mock
+    private OutgoingClient outgoing;
 
     @Mock
     private NodeConfig config;
@@ -201,6 +206,29 @@ public class MonitorTest {
             completedTakes++;
         }
         assertEquals(expectedTakes, completedTakes);
+    }
+
+    @Test
+    public void startWithExposedResourcesWithoutOutgoingClient_expectingException() throws MonitorException {
+        linkThreadpool();
+        when(config.getDefaultUpdateFrequency()).thenReturn(1000);
+        CustomException expectedException = CustomException.REQUIRMENTS_EXPOSED_RESOURCE_NOT_MET;
+
+        Monitor monitor = new Monitor(List.of(new ExposedResource()), config);
+        VigilatorNodeException exception = assertThrows(MonitorException.class, () -> monitor.start());
+
+        assertEquals(expectedException.getMessage(), exception.getMessage());
+    }
+
+    @Test
+    public void startWithExposedResourcesWithOutgoingClient_expectingException() throws MonitorException {
+        linkThreadpool();
+        when(config.getDefaultUpdateFrequency()).thenReturn(1000);
+        Monitor monitor = new Monitor(List.of(new ExposedResource()), config);
+        monitor.connectToOutgoingClient(outgoing);
+
+        assertDoesNotThrow(() -> monitor.start());
+        assertTrue(monitor.isActive());
     }
 
     private void linkThreadpool() {

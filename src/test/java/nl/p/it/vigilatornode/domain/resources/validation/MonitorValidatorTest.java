@@ -47,9 +47,11 @@ public class MonitorValidatorTest {
 
     private static final String ITEM_ONE_KEY = "status";
     private static final String ITEM_TWO_KEY = "pool size";
+    private static final String ITEM_WARNING_KEY = "threads queued";
     private static final String ITEM_DATETIME_KEY = "datetime";
     private static final String ITEM_CONDITION_ONE = "!ACTIVE";
     private static final String ITEM_CONDITION_TWO = "> 50";
+    private static final String ITEM_CONDITION_WARNING = "> 10 W";
     private static final String ITEM_CONDITION_DATETIME = "< 5min";
     private static final String INDICATION_DATETIME_CONDITION_FAILED
             = "Received update data exceeds specified time constraints in object";
@@ -160,7 +162,7 @@ public class MonitorValidatorTest {
                         "status": "NOT_ACTIVE",
                         "threads completed": "82388",
                         "maximum pool size": "100",
-                        "threads queued": "0",
+                        "threads queued": "11",
                         "pool size": "51"
                     },
                     "datetime": "1739957108"
@@ -188,7 +190,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithoutResult() {
         MonitoredData result = null;
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         assertDoesNotThrow(() -> classUnderTest.validate(result, parts, name));
@@ -198,7 +200,7 @@ public class MonitorValidatorTest {
     public void testValidateWithEmptyResult() {
         String expected = Error.EMPTY_RESPONSE.formatted(NAME, null);
         MonitoredData result = new MonitoredData(new byte[0]);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -214,7 +216,7 @@ public class MonitorValidatorTest {
     public void testValidateWithEmptyJSON() {
         String expected = Error.NOT_VALID_JSON.formatted(NAME, JSON_EXCEPTION_STATUS_NOT_FOUND);
         MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_JSON_OBJECT);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -230,7 +232,7 @@ public class MonitorValidatorTest {
     public void testValidateWithJSONContainingEmptyStatus() {
         String expected = Error.EMPTY_STATUS.formatted(NAME, PART_URL);
         MonitoredData result = getResultWith(RESPONSE_WITH_EMPTY_STATUS);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -246,7 +248,7 @@ public class MonitorValidatorTest {
     public void testValidateWithJSONStatusObjectNotHavingNameAttribute() {
         String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_NAME);
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_NAME);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -262,7 +264,7 @@ public class MonitorValidatorTest {
     public void testValidateWithJSONStatusObjectNotHavingItemsAttribute() {
         String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_ITEMS);
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_ITEMS.formatted(System.currentTimeMillis()));
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -278,7 +280,7 @@ public class MonitorValidatorTest {
     public void testValidateWithJSONStatusObjectNotHavingDatetimeAttribute() {
         String expected = Warning.STATUS_MISSING_FIELD.formatted(NAME, KEY_JSON_DATETIME);
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_NOT_HAVING_DATETIME);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -293,7 +295,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithValidJSON() {
         MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT.formatted(System.currentTimeMillis()));
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -305,7 +307,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithJSONHavingTwoStatusComponents() {
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENTS.formatted(System.currentTimeMillis(), System.currentTimeMillis()));
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -317,7 +319,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithConditionsFailing() {
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENT_FAILING_CONDITIONS);
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = NAME;
 
         classUnderTest.validate(result, parts, name);
@@ -327,6 +329,7 @@ public class MonitorValidatorTest {
         assertTrue(errors.get(0).contains(ITEM_CONDITION_ONE));
         assertTrue(errors.get(1).contains(ITEM_CONDITION_TWO));
         assertTrue(errors.get(2).contains(INDICATION_DATETIME_CONDITION_FAILED));
+        assertTrue(result.getWarnings().get(0).contains(ITEM_CONDITION_WARNING));
     }
 
     @Test
@@ -344,7 +347,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWithoutName() {
         MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT.formatted(System.currentTimeMillis()));
-        Map<String, MonitoredPart> parts = getPartsWith(true, true, true);
+        Map<String, MonitoredPart> parts = getItemParts();
         String name = null;
 
         classUnderTest.validate(result, parts, name);
@@ -430,7 +433,7 @@ public class MonitorValidatorTest {
         String name = NAME;
 
         classUnderTest.validateWebReply(result, parts, name);
-        
+
         assertTrue(result.isHealthy());
         assertTrue(result.getWarnings().contains(expected));
     }
@@ -456,18 +459,13 @@ public class MonitorValidatorTest {
         return monitoredData;
     }
 
-    private Map<String, MonitoredPart> getPartsWith(final boolean itemOne, final boolean itemTwo, final boolean datetimeValue) {
+    private Map<String, MonitoredPart> getItemParts() {
         Map<String, MonitoredPart> parts = new HashMap<>();
         MonitoredPart part = new MonitoredPart();
-        if (itemOne) {
-            part.addItem(ITEM_ONE_KEY, ITEM_CONDITION_ONE);
-        }
-        if (itemTwo) {
-            part.addItem(ITEM_TWO_KEY, ITEM_CONDITION_TWO);
-        }
-        if (datetimeValue) {
-            part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION_DATETIME);
-        }
+        part.addItem(ITEM_ONE_KEY, ITEM_CONDITION_ONE);
+        part.addItem(ITEM_TWO_KEY, ITEM_CONDITION_TWO);
+        part.addItem(ITEM_WARNING_KEY, ITEM_CONDITION_WARNING);
+        part.addItem(ITEM_DATETIME_KEY, ITEM_CONDITION_DATETIME);
         parts.put(PART_NAME, part);
 
         return parts;

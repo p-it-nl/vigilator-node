@@ -51,7 +51,11 @@ public enum CustomException {
     OUT_OF_CONTEXT_RESOURCE_NAME("Resource name given outside the context of a resource"),
     TO_DEEP_TABBING("Unexpected character detected, tab depth deeper then expected"),
     UNEXPECTED_RESOURCE("Unexpected resource type: %s, expected is either: ExposedResource, OnboardResource or InternalResource"),
-    CONFIG_REQUIRED("The object requires and instance of NodeConfig in order to be instantiated");
+    CONFIG_REQUIRED("The object requires and instance of NodeConfig in order to be instantiated"),
+    REQUIRMENTS_EXPOSED_RESOURCE_NOT_MET("""
+        For the monitor to start monitoring, the monitor requires a outgoing 
+        client to connect to the exposed resources. Invoke `connectToOutgoingClient()` 
+        and restart.""");
 
     private final String message;
 
