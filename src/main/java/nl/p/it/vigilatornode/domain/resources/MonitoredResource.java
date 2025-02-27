@@ -65,7 +65,7 @@ public abstract class MonitoredResource {
      * @param value the value to decorate with
      */
     public void decorate(final String decorator, final String key, final String value) {
-        boolean hasDecorator = !decorator.isEmpty();
+        boolean hasDecorator = decorator != null && !decorator.isEmpty();
         if (hasDecorator && MonitoredResourceConfig.TYPE.equals(decorator)) {
             config.set(key, value);
         } else if (hasDecorator) {
