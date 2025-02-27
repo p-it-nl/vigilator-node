@@ -38,7 +38,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_withoutValues() {
+    public void decorate_withoutValues() {
         String decorator = null;
         String value = null;
 
@@ -48,7 +48,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_withoutDecorator() {
+    public void decorate_withoutDecorator() {
         String decorator = null;
         String value = VALUE;
 
@@ -58,7 +58,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_withoutValue() {
+    public void decorate_withoutValue() {
         String decorator = DECORATOR;
         String value = null;
 
@@ -69,7 +69,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_withValues_expectingMonitoredPartWithItem() {
+    public void decorate_withValues_expectingMonitoredPartWithItem() {
         String decorator = DECORATOR;
         String value = VALUE;
 
@@ -78,11 +78,11 @@ public class MonitoredResourceTest {
         assertFalse(classUnderTest.parts.isEmpty());
         MonitoredPart created = classUnderTest.parts.get(DECORATOR);
         assertFalse(created.getItems().isEmpty());
-        assertTrue(created.getItems().get(value).equals(value));
+        assertEquals(value, created.getItems().get(value));
     }
 
     @Test
-    public void testDecorate_3args_withoutValues() {
+    public void decorate_3args_withoutValues() {
         String decorator = null;
         String key = null;
         String value = null;
@@ -93,7 +93,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_3args_withoutDecorator() {
+    public void decorate_3args_withoutDecorator() {
         String decorator = null;
         String key = KEY;
         String value = VALUE;
@@ -104,7 +104,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_3args_withoutKey() {
+    public void decorate_3args_withoutKey() {
         String decorator = DECORATOR;
         String key = null;
         String value = VALUE;
@@ -116,7 +116,21 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testDecorate_3args_withoutValue() {
+    public void decorate_3args_withValues_expectingMonitoredPartWithItemContainingKeyAndValue() {
+        String decorator = DECORATOR;
+        String key = KEY;
+        String value = VALUE;
+
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, key, value));
+
+        assertFalse(classUnderTest.parts.isEmpty());
+        MonitoredPart created = classUnderTest.parts.get(DECORATOR);
+        assertFalse(created.getItems().isEmpty());
+        assertEquals(VALUE, created.getItems().get(KEY));
+    }
+
+    @Test
+    public void decorate_3args_withoutValue() {
         String decorator = DECORATOR;
         String key = KEY;
         String value = null;
