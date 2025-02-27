@@ -116,4 +116,8 @@ public abstract class MonitoredResource {
                 + ", config=" + config
                 + ", parts=" + parts + '}';
     }
+
+    boolean isHealthy() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
