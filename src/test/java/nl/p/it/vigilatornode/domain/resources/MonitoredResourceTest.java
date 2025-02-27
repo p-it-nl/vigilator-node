@@ -21,51 +21,99 @@ import org.junit.jupiter.api.BeforeEach;
 
 /**
  * General tests for monitored resource
+ *
  * @author Patrick
  */
 public class MonitoredResourceTest {
     
     private MonitoredResource classUnderTest;
     
-   // @BeforeEach
-    public MonitoredResourceTest() {
-   //     classUnderTest = new MonitoredResource
+    private static final String DECORATOR = "mock";
+    private static final String KEY = "mock";
+    private static final String VALUE = "mock";
+    
+    @BeforeEach
+    public void MonitoredResourceTest() {
+        classUnderTest = new TestResource();
     }
-
+    
     @Test
-    public void testDecorate_String_String() {
+    public void testDecorate_withoutValues() {
+        String decorator = null;
+        String value = null;
+        
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, value));
+        
+        assertTrue(classUnderTest.parts.isEmpty());
     }
-
+    
     @Test
-    public void testDecorate_3args() {
+    public void testDecorate_withoutDecorator() {
+        String decorator = null;
+        String value = VALUE;
+        
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, value));
+        
+        assertTrue(classUnderTest.parts.isEmpty());
     }
-
+    
+    @Test
+    public void testDecorate_withoutValue() {
+        String decorator = DECORATOR;
+        String value = null;
+        
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, value));
+        
+        assertFalse(classUnderTest.parts.isEmpty());
+        assertTrue(classUnderTest.parts.get(DECORATOR).getItems().isEmpty());
+    }
+    
+    @Test
+    public void testDecorate_withValues_expectingMonitoredPartWithItem() {
+        String decorator = DECORATOR;
+        String value = VALUE;
+        
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, value));
+        
+        assertFalse(classUnderTest.parts.isEmpty());
+        MonitoredPart created = classUnderTest.parts.get(DECORATOR);
+        assertFalse(created.getItems().isEmpty());
+        assertTrue(created.getItems().get(value).equals(value));
+    }
+    
+    @Test
+    public void testDecorate_3args_withoutValues() {
+        String decorator;
+        String key;
+        String value;
+    }
+    
     @Test
     public void testGetName() {
     }
-
+    
     @Test
     public void testSetName() {
     }
-
+    
     @Test
     public void testGetConfig() {
     }
-
+    
     @Test
     public void testGetData() {
     }
-
+    
     @Test
     public void testUpdateStatus() {
     }
-
+    
     @Test
     public void testToString() {
     }
-
+    
     public class TestResource extends MonitoredResource {
-
+        
         public void updateStatus() {
         }
     }
