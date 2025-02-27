@@ -31,7 +31,8 @@ public class MonitoredResourceTest {
     private static final String DECORATOR = "mock";
     private static final String KEY = "mock";
     private static final String VALUE = "mock";
-
+    private static final String NAME = "mock";
+    
     @BeforeEach
     public void MonitoredResourceTest() {
         classUnderTest = new TestResource();
@@ -116,20 +117,6 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void decorate_3args_withValues_expectingMonitoredPartWithItemContainingKeyAndValue() {
-        String decorator = DECORATOR;
-        String key = KEY;
-        String value = VALUE;
-
-        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, key, value));
-
-        assertFalse(classUnderTest.parts.isEmpty());
-        MonitoredPart created = classUnderTest.parts.get(DECORATOR);
-        assertFalse(created.getItems().isEmpty());
-        assertEquals(VALUE, created.getItems().get(KEY));
-    }
-
-    @Test
     public void decorate_3args_withoutValue() {
         String decorator = DECORATOR;
         String key = KEY;
@@ -144,7 +131,44 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testGetName() {
+    public void decorate_3args_withValues_expectingMonitoredPartWithItemContainingKeyAndValue() {
+        String decorator = DECORATOR;
+        String key = KEY;
+        String value = VALUE;
+
+        assertDoesNotThrow(() -> classUnderTest.decorate(decorator, key, value));
+
+        assertFalse(classUnderTest.parts.isEmpty());
+        MonitoredPart created = classUnderTest.parts.get(DECORATOR);
+        assertFalse(created.getItems().isEmpty());
+        assertEquals(VALUE, created.getItems().get(KEY));
+    }
+    
+    @Test
+    public void getName_notHavingName() {
+        String result = classUnderTest.getName();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void getName_havingEmptyName() {
+        String name = "";
+        
+        classUnderTest.setName(name);
+        String result = classUnderTest.getName();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void getName_havingName() {
+        String name = NAME;
+        
+        classUnderTest.setName(name);
+        String result = classUnderTest.getName();
+
+        assertEquals(NAME, result);
     }
 
     @Test
