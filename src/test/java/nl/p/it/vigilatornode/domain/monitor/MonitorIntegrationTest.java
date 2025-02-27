@@ -81,13 +81,13 @@ public class MonitorIntegrationTest {
         Thread.sleep(300);
         assertTrue(monitor.isActive());
         List<MonitoredResource> resources = monitor.getResources();
-        for (MonitoredResource resource : resources) {
-            System.out.println(resource);
+        MonitoredResource one = resources.get(0);
+        MonitoredResource two = resources.get(0);
+        MonitoredResource three = resources.get(0);
 
-            for (MonitoredData entry : resource.getData()) {
-                System.out.println(entry);
-            }
-        }
+    //    assertTrue(one.i)
+     //   one.getData()
+        
     }
 
     private List<MonitoredResource> getExposedResources() {
@@ -121,12 +121,12 @@ public class MonitorIntegrationTest {
 
     private void prepareResponses() throws IOException, InterruptedException {
         when(client.send(any(HttpRequest.class), eq(HttpResponse.BodyHandlers.ofByteArray())))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_ONE_OK.getBytes()))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_ONE_NOK.getBytes()))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_ONE_OK.getBytes()))
-                .thenReturn(new MockResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()));
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_ONE_OK.getBytes()))
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()))
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_ONE_NOK.getBytes()))
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()))
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_ONE_OK.getBytes()))
+                .thenReturn(new TestResponse(200, RESPONSE_RESOURCE_THREE_NOK.getBytes()));
     }
 
     private static final String RESPONSE_RESOURCE_ONE_OK = """
@@ -182,12 +182,12 @@ public class MonitorIntegrationTest {
                 new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(10)));
     }
 
-    private class MockResponse implements HttpResponse {
+    private class TestResponse implements HttpResponse {
 
         private final int status;
         private final byte[] body;
 
-        public MockResponse(final int status, final byte[] body) {
+        public TestResponse(final int status, final byte[] body) {
             this.status = status;
             this.body = body;
         }
