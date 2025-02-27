@@ -15,6 +15,8 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
+import java.util.List;
+import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +34,10 @@ public class MonitoredResourceTest {
     private static final String KEY = "mock";
     private static final String VALUE = "mock";
     private static final String NAME = "mock";
-    
+    private static final String KEY_ACTIVE = "active";
+    private static final String KEY_ENDPOINT = "url";
+    private static final String ACTIVE = "true";
+
     @BeforeEach
     public void MonitoredResourceTest() {
         classUnderTest = new TestResource();
@@ -143,7 +148,7 @@ public class MonitoredResourceTest {
         assertFalse(created.getItems().isEmpty());
         assertEquals(VALUE, created.getItems().get(KEY));
     }
-    
+
     @Test
     public void getName_notHavingName() {
         String result = classUnderTest.getName();
@@ -154,7 +159,7 @@ public class MonitoredResourceTest {
     @Test
     public void getName_havingEmptyName() {
         String name = "";
-        
+
         classUnderTest.setName(name);
         String result = classUnderTest.getName();
 
@@ -164,7 +169,7 @@ public class MonitoredResourceTest {
     @Test
     public void getName_havingName() {
         String name = NAME;
-        
+
         classUnderTest.setName(name);
         String result = classUnderTest.getName();
 
@@ -172,28 +177,92 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void testSetName() {
+    public void getConfig_notHavingSetConfig_expectingDefault() {
+        MonitoredResourceConfig result = classUnderTest.getConfig();
+
+        assertNotNull(result);
+        assertFalse(result.isActive());
+        assertTrue(result.getEndpoint() == null);
     }
 
     @Test
-    public void testGetConfig() {
+    public void getConfig_havingConfigSetToActiveButNoUrl() {
+        boolean expected = true;
+        String active = ACTIVE;
+
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ACTIVE, active);
+        MonitoredResourceConfig result = classUnderTest.getConfig();
+
+        assertNotNull(result);
+        assertEquals(expected, result.isActive());
+        assertTrue(result.getEndpoint() == null);
     }
 
     @Test
-    public void testGetData() {
+    public void getConfig_havingConfigSetToActiveWithUrl() {
+        boolean expected = true;
+        String expectedUrl = VALUE;
+        String active = ACTIVE;
+        String url = VALUE;
+
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ACTIVE, active);
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ENDPOINT, url);
+        MonitoredResourceConfig result = classUnderTest.getConfig();
+
+        assertNotNull(result);
+        assertEquals(expected, result.isActive());
+        assertEquals(expectedUrl, result.getEndpoint());
     }
 
     @Test
-    public void testUpdateStatus() {
+    public void getData_notHavingAny_expectingDefault() {
+        List<MonitoredData> result = classUnderTest.getData();
+
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    public void testToString() {
+    public void getData_havingOneEntry() {
+        classUnderTest.data.add(new MonitoredData(new byte[0]));
+
+        List<MonitoredData> result = classUnderTest.getData();
+
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    public void isHealthy_withoutValues_expectingDefault() {
+        boolean expected = false;
+
+        boolean result = classUnderTest.isHealthy();
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void isHealthy_withLastMonitoredDataHavingNoErrors_expectingTrue() {
+        boolean expected = true;
+
+        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        boolean result = classUnderTest.isHealthy();
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void isHealthy_withLastMonitoredDataHavingNoErrors_expectingFalse() {
+        boolean expected = false;
+
+        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        boolean result = classUnderTest.isHealthy();
+
+        assertEquals(expected, result);
     }
 
     public class TestResource extends MonitoredResource {
 
         public void updateStatus() {
+            // nothing to do for the test
         }
     }
 
