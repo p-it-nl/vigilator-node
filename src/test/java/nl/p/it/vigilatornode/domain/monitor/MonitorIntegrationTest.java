@@ -96,25 +96,25 @@ public class MonitorIntegrationTest {
         resource.setName("ResourceOne");
         resource.decorate(MonitoredResourceConfig.TYPE, "active", "true");
         resource.decorate(MonitoredResourceConfig.TYPE, "url", "http://resource-one.com/");
-        resource.decorate("ResourceOne", "isProcessing", "true");
-        resource.decorate("ResourceOne", "hasExceptions", "false");
+        resource.decorate("ResourceOne", "isProcessing", "== false");
+        resource.decorate("ResourceOne", "hasExceptions", "== true");
         resources.add(resource);
 
         resource = new ExposedResource();
         resource.setName("ResourceTwo");
-        resource.decorate(MonitoredResourceConfig.TYPE, "active", "false");
+        resource.decorate(MonitoredResourceConfig.TYPE, "active", "== false");
         resource.decorate(MonitoredResourceConfig.TYPE, "url", "http://resource-two.com/");
-        resource.decorate("ResourceTwo", "isProcessing", "true");
+        resource.decorate("ResourceTwo", "isProcessing", "== true");
         resources.add(resource);
 
         resource = new ExposedResource();
         resource.setName("ResourceThree");
         resource.decorate(MonitoredResourceConfig.TYPE, "active", "true");
         resource.decorate(MonitoredResourceConfig.TYPE, "url", "http://resource-three.com/");
-        resource.decorate("ResourceThree", "database", "running");
+        resource.decorate("ResourceThree", "database", "!running");
         resource.decorate("ResourceThree", "threads queued", "> 10 W");
         resource.decorate("ResourceThree", "threads broken", "> 0");
-      //  resources.add(resource);
+        resources.add(resource);
 
         return resources;
     }
@@ -137,9 +137,9 @@ public class MonitorIntegrationTest {
                     "name": "ResourceOne",
                     "items": {
                         "isProcessing": "true",
-                        "hasExceptions": "false",
-                        "datetime": "1740587609"
-                    }
+                        "hasExceptions": "false"
+                    },
+                    "datetime": "1740587609"
                 }
             ]
         }
@@ -152,9 +152,9 @@ public class MonitorIntegrationTest {
                     "name": "ResourceOne",
                     "items": {
                         "isProcessing": "false",
-                        "hasExceptions": "true",
-                        "datetime": "1740587609"
-                    }
+                        "hasExceptions": "true"
+                    },
+                    "datetime": "1740587609"
                 }
             ]
         }
