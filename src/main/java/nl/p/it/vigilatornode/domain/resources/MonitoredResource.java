@@ -103,7 +103,16 @@ public abstract class MonitoredResource {
     public List<MonitoredData> getData() {
         return data;
     }
-    
+
+    /**
+     * @return if the resource is healthy, meaning the last monitored data entry
+     * returned healthy
+     * @see MonitoredData.isHealthy();
+     */
+    public boolean isHealthy() {
+        return !data.isEmpty() && data.getLast().isHealthy();
+    }
+
     /**
      * Update the status of the monitored resources
      */
@@ -115,9 +124,5 @@ public abstract class MonitoredResource {
                 + "name=" + name
                 + ", config=" + config
                 + ", parts=" + parts + '}';
-    }
-
-    boolean isHealthy() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

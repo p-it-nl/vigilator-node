@@ -37,6 +37,7 @@ public class MonitoredResourceTest {
     private static final String KEY_ACTIVE = "active";
     private static final String KEY_ENDPOINT = "url";
     private static final String ACTIVE = "true";
+    private static final String ERROR = "mock";
 
     @BeforeEach
     public void MonitoredResourceTest() {
@@ -240,7 +241,7 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void isHealthy_withLastMonitoredDataHavingNoErrors_expectingTrue() {
+    public void isHealthy_withLastMonitoredDataHealthy_expectingTrue() {
         boolean expected = true;
 
         classUnderTest.data.add(new MonitoredData(new byte[0]));
@@ -250,10 +251,12 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void isHealthy_withLastMonitoredDataHavingNoErrors_expectingFalse() {
+    public void isHealthy_withLastMonitoredDataBeingUnhealthy_expectingFalse() {
         boolean expected = false;
 
-        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        MonitoredData data = new MonitoredData(new byte[0]);
+        data.addError(ERROR);
+        classUnderTest.data.add(data);
         boolean result = classUnderTest.isHealthy();
 
         assertEquals(expected, result);
