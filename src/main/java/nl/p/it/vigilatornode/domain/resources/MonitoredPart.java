@@ -43,7 +43,7 @@ public class MonitoredPart {
     public void addItem(final String item, final String condition) {
         if (DATETIME.equals(item)) {
             datetimeCondition = condition;
-        } else if (!item.isEmpty()) {
+        } else if (item != null && !item.isEmpty()) {
             items.put(item, condition);
         }
     }

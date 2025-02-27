@@ -47,7 +47,7 @@ public abstract class MonitoredResource {
      * @param value the value to decorate with
      */
     public void decorate(final String decorator, final String value) {
-        boolean hasDecorator = !decorator.isEmpty();
+        boolean hasDecorator = decorator != null && !decorator.isEmpty();
         if (hasDecorator && !parts.containsKey(decorator)) {
             parts.put(decorator, new MonitoredPart());
         }
