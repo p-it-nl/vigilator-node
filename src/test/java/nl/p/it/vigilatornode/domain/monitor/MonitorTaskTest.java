@@ -43,15 +43,15 @@ public class MonitorTaskTest {
 
     @Test
     public void createMonitorTaskWithoutNotifier() {
-        MonitorTask task = new MonitorTask(List.of(new MockResource(true)), null);
+        MonitorTask task = new MonitorTask(List.of(new TestResource(true)), null);
 
         assertDoesNotThrow(() -> task.run());
     }
 
     @Test
     public void createMonitorTaskWithActiveAndNotActiveResource_expectingOnlyActiveToBeCalled() {
-        MockResource active = new MockResource(true);
-        MockResource inActive = new MockResource(false);
+        TestResource active = new TestResource(true);
+        TestResource inActive = new TestResource(false);
         MonitorTask task = new MonitorTask(List.of(active, inActive), null);
 
         assertDoesNotThrow(() -> task.run());
@@ -60,11 +60,11 @@ public class MonitorTaskTest {
         assertFalse(inActive.hasBeenCalled());
     }
 
-    private class MockResource extends MonitoredResource {
+    private class TestResource extends MonitoredResource {
 
         private boolean isCalled;
 
-        public MockResource(final boolean isActive) {
+        public TestResource(final boolean isActive) {
             config.setActive(isActive);
         }
 
