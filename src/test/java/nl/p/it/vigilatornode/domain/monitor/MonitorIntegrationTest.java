@@ -82,8 +82,8 @@ public class MonitorIntegrationTest {
         assertTrue(monitor.isActive());
         List<MonitoredResource> resources = monitor.getResources();
         MonitoredResource one = resources.get(0);
-        MonitoredResource two = resources.get(0);
-        MonitoredResource three = resources.get(0);
+        MonitoredResource two = resources.get(1);
+        MonitoredResource three = resources.get(2);
 
         assertTrue(one.isHealthy());
         assertFalse(two.isHealthy());
