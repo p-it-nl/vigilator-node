@@ -36,7 +36,8 @@ public class MonitoredResourceTest {
     private static final String NAME = "mock";
     private static final String KEY_ACTIVE = "active";
     private static final String KEY_ENDPOINT = "url";
-    private static final String ACTIVE = "true";
+    private static final String KEY_IGNORE_TLS_ISSUES = "ignoreTLSIssues";
+    private static final String TRUE = "true";
     private static final String ERROR = "mock";
 
     @BeforeEach
@@ -189,7 +190,7 @@ public class MonitoredResourceTest {
     @Test
     public void getConfig_havingConfigSetToActiveButNoUrl() {
         boolean expected = true;
-        String active = ACTIVE;
+        String active = TRUE;
 
         classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ACTIVE, active);
         MonitoredResourceConfig result = classUnderTest.getConfig();
@@ -203,7 +204,7 @@ public class MonitoredResourceTest {
     public void getConfig_havingConfigSetToActiveWithUrl() {
         boolean expected = true;
         String expectedUrl = VALUE;
-        String active = ACTIVE;
+        String active = TRUE;
         String url = VALUE;
 
         classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ACTIVE, active);
@@ -213,6 +214,25 @@ public class MonitoredResourceTest {
         assertNotNull(result);
         assertEquals(expected, result.isActive());
         assertEquals(expectedUrl, result.getEndpoint());
+    }
+
+    @Test
+    public void getConfig_havingConfigSetToActiveWithUrlAndWithIgnoringTLSErrors() {
+        boolean expected = true;
+        String expectedUrl = VALUE;
+        String active = TRUE;
+        String url = VALUE;
+        String ignoreTLSIssues = TRUE;
+
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ACTIVE, active);
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_ENDPOINT, url);
+        classUnderTest.decorate(MonitoredResourceConfig.TYPE, KEY_IGNORE_TLS_ISSUES, ignoreTLSIssues);
+        MonitoredResourceConfig result = classUnderTest.getConfig();
+
+        assertNotNull(result);
+        assertEquals(expected, result.isActive());
+        assertEquals(expectedUrl, result.getEndpoint());
+        assertEquals(expected, result.getIgnoreTLSIssues());
     }
 
     @Test
