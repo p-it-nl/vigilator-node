@@ -25,6 +25,7 @@ import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
 import static java.lang.System.Logger.Level.INFO;
+import nl.p.it.vigilatornode.domain.data.MonitoredData;
 
 /**
  * Monitor, schedules monitor tasks for resources and keeps track of results
@@ -115,6 +116,8 @@ public class Monitor {
     }
 
     private void timeout() {
+        LOGGER.log(INFO, "Waiting before next update");
+        
         executor.submit(new WaitTask(defaultUpdateFrequency, timeoutFinished()));
     }
 

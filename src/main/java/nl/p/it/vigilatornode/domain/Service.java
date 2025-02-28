@@ -28,9 +28,6 @@ public interface Service {
 
     /**
      * Process received request
-     * <br>
-     * This processes synchronously to make sure the customer places an order
-     * that AFAS actually accepts
      *
      * @param bytes the request body byte stream
      * @param params the parameters send with the request

@@ -82,7 +82,7 @@ public class Request implements Runnable {
                 throw new HttpClientException(CustomException.THE_REQUEST_WAS_NOT_AUTHORIZED);
             }
             default -> {
-                LOGGER.log(ERROR, "Unexpected response code received from afas, being: {0}, "
+                LOGGER.log(ERROR, "Unexpected response code received being: {0}, "
                         + "containing message: {1}", response.statusCode(), new String(response.body()));
             }
         }
