@@ -43,8 +43,6 @@ public class OutgoingClient {
 
     private static final int DEFAULT_TIMEOUT_IN_MINUTES = 1;
 
-    private static final System.Logger LOGGER = System.getLogger(OutgoingClient.class.getName());
-
     private OutgoingClient(final NodeConfig config) {
         this.builder = HttpRequest.newBuilder();
         this.client = HttpClient.newBuilder()
@@ -89,8 +87,6 @@ public class OutgoingClient {
      * occur while sending the request
      */
     public void scheduleRequest(final String url, final Acceptor<MonitoredData> acceptor) throws HttpClientException {
-        LOGGER.log(INFO, "Queuing request");
-
         try {
             HttpRequest request = builder.GET()
                     .uri(new URI(url))
