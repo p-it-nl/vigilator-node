@@ -27,11 +27,13 @@ public class MonitoredResourceConfig {
     public static final String TYPE = "config";
 
     private boolean active;
-    private String endpoint;
+    private boolean ignoreTLSIssues;
+    private String url;
 
     private static final String KEY_ACTIVE = "active";
-    private static final String VALUE_ACTIVE = "true";
-    private static final String KEY_ENDPOINT = "url";
+    private static final String VALUE_TRUE = "true";
+    private static final String KEY_URL = "url";
+    private static final String KEY_IGNORE_TLS_ISSUES = "ignoreTLSIssues";
 
     private static final System.Logger LOGGER = System.getLogger(MonitoredResourceConfig.class.getName());
 
@@ -54,10 +56,17 @@ public class MonitoredResourceConfig {
     }
 
     /**
-     * @return the endpoint of this monitored resource
+     * @return the url of this monitored resource
      */
-    public String getEndpoint() {
-        return endpoint;
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @return whether to ignore TLS issues for this resource
+     */
+    public boolean getIgnoreTLSIssues() {
+        return ignoreTLSIssues;
     }
 
     /**
@@ -65,12 +74,19 @@ public class MonitoredResourceConfig {
      * @param value the value to set for the config
      */
     public void set(final String key, final String value) {
-        if (KEY_ACTIVE.equals(key) && VALUE_ACTIVE.equals(value)) {
-            active = true;
-        } else if (KEY_ENDPOINT.equals(key)) {
-            endpoint = value;
-        } else {
-            LOGGER.log(WARNING, "Unexpected key detected: " + key + " the value will be ignored");
+        switch (key) {
+            case KEY_ACTIVE -> {
+                active = VALUE_TRUE.equals(value);
+            }
+            case KEY_URL -> {
+                url = value;
+            }
+            case KEY_IGNORE_TLS_ISSUES -> {
+                ignoreTLSIssues = VALUE_TRUE.equals(value);
+            }
+            default -> {
+                LOGGER.log(WARNING, "Unexpected key detected: " + key + " the value will be ignored");
+            }
         }
     }
 }

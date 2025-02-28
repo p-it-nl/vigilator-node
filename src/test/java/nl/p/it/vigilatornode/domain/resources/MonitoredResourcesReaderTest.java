@@ -96,7 +96,7 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withCorrectResourcesFiles() throws IncorrectResourceFileException {
-        int expectedSize = 3;
+        int expectedSize = 4;
         String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_CORRECT;
 
         List<MonitoredResource> result = classUnderTest.read(resourcesFilesLocation);

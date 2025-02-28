@@ -61,7 +61,7 @@ public class ExposedResource extends MonitoredResource {
      */
     @Override
     public void updateStatus() {
-        resourceMonitorEndpoint = (resourceMonitorEndpoint != null ? resourceMonitorEndpoint : config.getEndpoint());
+        resourceMonitorEndpoint = (resourceMonitorEndpoint != null ? resourceMonitorEndpoint : config.getUrl());
         if (resourceMonitorEndpoint != null) {
             retrieveUpdateFromResource(resourceMonitorEndpoint);
         }
