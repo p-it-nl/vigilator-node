@@ -74,7 +74,7 @@ public abstract class MonitoredResource {
      */
     public void decorate(final String decorator, final String key, final String value) {
         boolean hasDecorator = decorator != null && !decorator.isEmpty();
-        if (hasDecorator && MonitoredResourceConfig.TYPE.equals(decorator)) {
+        if (hasDecorator && MonitoredResourceConfig.TYPE.equalsIgnoreCase(decorator)) {
             config.set(key, value);
         } else if (hasDecorator) {
             parts.computeIfAbsent(decorator, part -> new MonitoredPart());
