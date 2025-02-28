@@ -35,6 +35,7 @@ public class ConditionValidator {
     private static final int NPOS = -1;
     private static final String MIN = "min";
     private static final char WARNING_INDICATION = 'W';
+    private static final char PERCENT = '%';
 
     private static final System.Logger LOGGER = System.getLogger(ConditionValidator.class.getName());
 
@@ -121,9 +122,9 @@ public class ConditionValidator {
         String conditionToMatch = condition.substring(1, conditionSize);
         conditionToMatch = trimFirstSpaceIfExists(conditionToMatch);
         try {
-            int startPositionTemporalIndicator = condition.indexOf(MIN);
+            int startPositionTemporalIndicator = conditionToMatch.indexOf(MIN);
             if (NPOS != startPositionTemporalIndicator) {
-                String temporalAmountString = condition.substring(0, startPositionTemporalIndicator);
+                String temporalAmountString = conditionToMatch.substring(0, startPositionTemporalIndicator);
                 temporalAmountString = temporalAmountString.substring(1);
                 temporalAmountString = trimFirstSpaceIfExists(temporalAmountString);
                 int temporalAmount = Integer.parseInt(temporalAmountString.trim());
@@ -133,9 +134,8 @@ public class ConditionValidator {
                     return matchesDateCondition(value, temporalAmount, BEFORE);
                 }
             } else {
-                int parsedValue = Integer.parseInt(valueToMatch);
-                int parsedCondition = Integer.parseInt(conditionToMatch);
-
+                int parsedValue = Integer.parseInt(removeCharacter(valueToMatch, PERCENT));
+                int parsedCondition = Integer.parseInt(removeCharacter(conditionToMatch, PERCENT));
                 if (BIGGER == type) {
                     return parsedValue > parsedCondition;
                 } else {
@@ -191,5 +191,24 @@ public class ConditionValidator {
             return condition.substring(0, (end - 1));
         }
         return condition;
+    }
+
+    /**
+     * Remove character from a string Why? because String.replaceAll uses regex
+     * under the hood and is unreasonably slow for something this simple
+     *
+     * FUTURE_WORK: move to a util class?
+     *
+     * @param value to replace in
+     * @param charToRemove the char to remove
+     * @return the value without the char of unchanged if the char was not found
+     */
+    private String removeCharacter(final String value, final char charToRemove) {
+        int index = value.indexOf(charToRemove);
+        if (NPOS != index) {
+            return value.substring(0, index)
+                    + value.substring(index + 1, value.length());
+        }
+        return value;
     }
 }
