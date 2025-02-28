@@ -205,7 +205,7 @@ public class MonitorValidator {
     private void validateDatetimeCondition(final MonitoredPart part, final JSONObject statusEntry, final String partName, final MonitoredData result) {
         String datetimeCondition = part.getDatetimeCondition();
         if (datetimeCondition != null && !datetimeCondition.isEmpty()) {
-            String datetimeLastUpdated = statusEntry.getString(KEY_JSON_DATETIME);
+            String datetimeLastUpdated = String.valueOf(statusEntry.get(KEY_JSON_DATETIME));
             if (conditionValidator.validateMeetsCriteria(datetimeLastUpdated, datetimeCondition)) {
                 handlePotentialError(
                         Error.withArgs(Error.EXCEEDS_TIME_CONSTRAINTS, partName),
