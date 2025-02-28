@@ -34,6 +34,16 @@ public abstract class MonitoredResource {
     protected final Map<String, MonitoredPart> parts;
     protected final List<MonitoredData> data;
 
+    /**
+     * FUTURE_WORK maybe this should be configurable In order to limit the
+     * amount of memory used, monitored data stored on the heap should be
+     * limited If data size (time data received) exceeds the limit amount, the
+     * data entries are truncated based on first in, first out
+     *
+     * @see this.finaliseUpdate()
+     */
+    private static final int DATA_LIMIT_AMOUNT = 100;
+
     protected MonitoredResource() {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
@@ -48,7 +58,7 @@ public abstract class MonitoredResource {
      */
     public void decorate(final String decorator, final String value) {
         boolean hasDecorator = decorator != null && !decorator.isEmpty();
-        
+
         if (hasDecorator) {
             parts.computeIfAbsent(decorator, part -> new MonitoredPart());
             parts.get(decorator).addItem(value, value);
@@ -107,6 +117,27 @@ public abstract class MonitoredResource {
      */
     public boolean isHealthy() {
         return !data.isEmpty() && data.getLast().isHealthy();
+    }
+
+    /**
+     * FUTURE_WORK: this is an important point of optimization<br>
+     * Given monitored data in memory is easy to access for status updates,
+     * statistics etc... however memory is not unlimited nor cheap. Reading from
+     * a persistent storage isn't either. Probably will end up in a situation
+     * where all immediate data requirements can be answered from the heap and
+     * only for more unusual request reading from persisted storage is required.
+     * Next to that data will be kept in the heap as long as there is space.
+     *
+     * truncates the data based on DATA_LIMIT_AMOUNT to conserve memory usage
+     */
+    public void finaliseUpdate() {
+        int diff = data.size() - DATA_LIMIT_AMOUNT;
+        if (diff > 0) {
+            for (int i = 0; i < diff; i++) {
+                data.getFirst().close();
+                data.removeFirst();
+            }
+        }
     }
 
     /**
