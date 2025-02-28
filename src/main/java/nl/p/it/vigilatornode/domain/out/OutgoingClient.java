@@ -47,6 +47,7 @@ public class OutgoingClient {
         this.builder = HttpRequest.newBuilder();
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMinutes(1))
+                .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
 
         executor = config.getPoolExecutor();
