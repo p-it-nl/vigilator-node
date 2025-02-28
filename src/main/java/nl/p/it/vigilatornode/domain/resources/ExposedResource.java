@@ -82,7 +82,7 @@ public class ExposedResource extends MonitoredResource {
             // resource does not require web availability checks
         }
 
-        //finaliseUpdate();
+        finaliseUpdate();
     }
 
     private void retrieveUpdateFromResource(final String url) {
