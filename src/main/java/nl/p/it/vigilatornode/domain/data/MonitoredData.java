@@ -15,7 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.data;
 
-import java.io.Serializable;
 import java.lang.ref.Cleaner;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import java.util.List;
  *
  * @author Patrick
  */
-public class MonitoredData implements AutoCloseable, Serializable {
+public class MonitoredData implements AutoCloseable {
 
     private final State state;
     private final Cleaner.Cleanable cleanable;
@@ -83,16 +82,18 @@ public class MonitoredData implements AutoCloseable, Serializable {
         this.cleanable = cleaner.register(this, state);
     }
 
+    public MonitoredData(final byte[] data, final String url) {
+        this.state = new State(data);
+        this.state.url = url;
+        this.cleanable = cleaner.register(this, state);
+    }
+    
     public byte[] getData() {
         return this.state.data;
     }
 
     public void label(final int take) {
         this.state.take = take;
-    }
-
-    public void url(final String url) {
-        this.state.url = url;
     }
 
     public int getTake() {

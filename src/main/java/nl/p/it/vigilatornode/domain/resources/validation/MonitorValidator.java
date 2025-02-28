@@ -15,8 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.resources.validation;
 
-import static java.lang.System.Logger.Level.ERROR;
-import static java.lang.System.Logger.Level.WARNING;
 import java.util.Iterator;
 import java.util.Map;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
@@ -26,6 +24,8 @@ import nl.p.it.vigilatornode.domain.resources.Warning;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.WARNING;
 
 /**
  * Validator to validate monitored data
@@ -154,29 +154,37 @@ public class MonitorValidator {
         if (statusEntry.has(KEY_JSON_NAME)) {
             String partName = statusEntry.getString(KEY_JSON_NAME);
             if (parts.containsKey(partName)) {
-                MonitoredPart part = parts.get(partName);
-                if (statusEntry.has(KEY_JSON_ITEMS)) {
-                    Map<String, String> validationItems = part.getItems();
-                    JSONObject items = statusEntry.getJSONObject(KEY_JSON_ITEMS);
-                    Iterator<String> keys = items.keys();
-                    while (keys.hasNext()) {
-                        String key = keys.next();
-                        validateItem(key, items, validationItems, partName, result);
-                    }
-                } else {
-                    result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_ITEMS));
-                }
-
-                if (statusEntry.has(KEY_JSON_DATETIME)) {
-                    validateDatetimeCondition(part, statusEntry, partName, result);
-                } else {
-                    result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_DATETIME));
-                }
+                validatePart(parts.get(partName), partName, statusEntry, result, name);
             } else {
                 // Not something the resource is interested in monitoring, skipping
             }
         } else {
             result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_NAME));
+        }
+    }
+
+    private void validatePart(
+            final MonitoredPart part,
+            final String partName,
+            final JSONObject statusEntry,
+            final MonitoredData result,
+            final String name) {
+        if (statusEntry.has(KEY_JSON_ITEMS)) {
+            Map<String, String> validationItems = part.getItems();
+            JSONObject items = statusEntry.getJSONObject(KEY_JSON_ITEMS);
+            Iterator<String> keys = items.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                validateItem(key, items, validationItems, partName, result);
+            }
+        } else {
+            result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_ITEMS));
+        }
+
+        if (statusEntry.has(KEY_JSON_DATETIME)) {
+            validateDatetimeCondition(part, statusEntry, partName, result);
+        } else {
+            result.addWarning(Warning.withArgs(Warning.STATUS_MISSING_FIELD, name, KEY_JSON_DATETIME));
         }
     }
 
@@ -218,5 +226,4 @@ public class MonitorValidator {
             result.addError(message);
         }
     }
-
 }

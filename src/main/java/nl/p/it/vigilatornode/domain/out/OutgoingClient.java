@@ -15,7 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.out;
 
-import static java.lang.System.Logger.Level.INFO;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -27,6 +26,7 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.HttpClientException;
+import static java.lang.System.Logger.Level.INFO;
 
 /**
  * Client for outgoing requests
@@ -36,7 +36,6 @@ import nl.p.it.vigilatornode.exception.HttpClientException;
 public class OutgoingClient {
 
     private HttpClient client;
-    private final NodeConfig config;
     private final HttpRequest.Builder builder;
     private final ThreadPoolExecutor executor;
 
@@ -47,7 +46,6 @@ public class OutgoingClient {
     private static final System.Logger LOGGER = System.getLogger(OutgoingClient.class.getName());
 
     private OutgoingClient(final NodeConfig config) {
-        this.config = config;
         this.builder = HttpRequest.newBuilder();
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMinutes(1))
@@ -92,7 +90,7 @@ public class OutgoingClient {
      */
     public void scheduleRequest(final String url, final Acceptor<MonitoredData> acceptor) throws HttpClientException {
         LOGGER.log(INFO, "Queuing request");
-        
+
         try {
             HttpRequest request = builder.GET()
                     .uri(new URI(url))

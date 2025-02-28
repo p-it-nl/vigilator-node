@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Patrick
  */
+@SuppressWarnings("java:S1192")// really valuable in this class to have literals for readability
 public class ConditionValidatorTest {
 
     private ConditionValidator classUnderTest;
@@ -94,7 +95,7 @@ public class ConditionValidatorTest {
 
         assertTrue(result);
     }
-    
+
     @Test
     public void conditionForValueIsNotWithValueBeingUnequalToConditionExpectingNoCapsAndReceivingCaps() {
         String value = "Value";

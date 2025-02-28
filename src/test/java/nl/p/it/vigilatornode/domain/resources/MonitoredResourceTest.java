@@ -40,7 +40,7 @@ public class MonitoredResourceTest {
     private static final String ERROR = "mock";
 
     @BeforeEach
-    public void MonitoredResourceTest() {
+    public void setUp() {
         classUnderTest = new TestResource();
     }
 

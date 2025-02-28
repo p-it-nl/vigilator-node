@@ -69,9 +69,7 @@ public class MonitoredResourcesReaderTest {
         CustomException expectedException = CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST;
         String resourcesFilesLocation = DOES_NOT_EXIST;
 
-        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
-            classUnderTest.read(resourcesFilesLocation);
-        });
+        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> classUnderTest.read(resourcesFilesLocation));
 
         assertEquals(String.format(expectedException.getMessage(), resourcesFilesLocation), exception.getMessage());
     }
@@ -81,9 +79,7 @@ public class MonitoredResourcesReaderTest {
         CustomException expectedException = CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST;
         String resourcesFilesLocation = FOLDER_EMPTY;
 
-        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
-            classUnderTest.read(resourcesFilesLocation);
-        });
+        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> classUnderTest.read(resourcesFilesLocation));
 
         assertEquals(String.format(expectedException.getMessage(), resourcesFilesLocation), exception.getMessage());
     }
@@ -93,9 +89,7 @@ public class MonitoredResourcesReaderTest {
         String expectedException = FIRST_INCORRECT_MESSAGE;
         String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_INCORRECT;
 
-        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
-            classUnderTest.read(resourcesFilesLocation);
-        });
+        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> classUnderTest.read(resourcesFilesLocation));
 
         assertEquals(expectedException, exception.getMessage());
     }

@@ -89,7 +89,6 @@ public class App {
 
         @Override
         public void run() {
-        System.out.println("Shut Down Hook Called");
             monitor.stop();
             httpServer.stop();
             super.start();

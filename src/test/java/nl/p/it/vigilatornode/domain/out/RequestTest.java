@@ -36,6 +36,7 @@ public class RequestTest {
     private static final String REQUEST = "request";
     private static final String ACCEPTOR = "acceptor";
     private static final String CLIENT = "client";
+    private static final String LOCALHOST = "https://localhost/";
 
     @Test
     public void requestInstanceWithoutAnyValues() {
@@ -94,6 +95,6 @@ public class RequestTest {
     }
 
     private HttpRequest getMinimalRequest() throws URISyntaxException {
-        return HttpRequest.newBuilder().uri(new URI("https://localhost/")).build();
+        return HttpRequest.newBuilder().uri(new URI(LOCALHOST)).build();
     }
 }

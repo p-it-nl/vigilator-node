@@ -26,7 +26,7 @@ package nl.p.it.vigilatornode.domain.resources;
  */
 public class Error {
 
-    public static final String ERROR = "Error: %s";
+    public static final String GENERAL_ERROR = "Error: %s";
     public static final String NO_WEB_URL = "item: Web, no web url provided";
     public static final String NO_RESPONE = "Failed to get response for resource: %s on url: %s, see stacktrace for details";
     public static final String EMPTY_RESPONSE = "Empty response received from resource: %s on url: %s";
@@ -36,6 +36,9 @@ public class Error {
     public static final String EXCEEDS_TIME_CONSTRAINTS = "Received update data exceeds specified time constraints in object: %s";
     public static final String WEB_VALIDATION_EMPTY = "Web reply for url %s resulted in empty response";
     public static final String WEB_VALIDATION_FAILED = "Web reply for url %s failed to validate title";
+
+    private Error() {
+    }
 
     /**
      * Format a warning

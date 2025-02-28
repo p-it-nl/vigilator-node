@@ -288,20 +288,17 @@ public class MonitorTest {
         public FlickeringResource() {
             this.config.setActive(true);
         }
-        
+
         @Override
         public void updateStatus() {
             take++;
 
             MonitoredData result = new MonitoredData(new byte[0]);
-            int d = (int) (Math.random() * 3 + 1);
-            switch (d) {
-                case 1 -> {
-                    result.addError(ERROR);
-                }
-                case 2 -> {
-                    result.addWarning(WARNING);
-                }
+            int d = (int) (Math.random() * 3 + 1);//NOSONAR: creating new Random() object everytime I personally do not find better
+            if (d == 1) {
+                result.addError(ERROR);
+            } else if (d == 2) {
+                result.addWarning(WARNING);
             }
 
             result.label(take);

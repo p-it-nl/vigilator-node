@@ -33,7 +33,7 @@ import nl.p.it.vigilatornode.exception.HttpClientException;
  */
 public class Request implements Runnable {
 
-    private final HttpRequest request;
+    private final HttpRequest httpRequest;
     private final HttpClient client;
     private final Acceptor<MonitoredData> acceptor;
 
@@ -47,7 +47,7 @@ public class Request implements Runnable {
                     + (client == null ? "client" : ""));
         }
 
-        this.request = request;
+        this.httpRequest = request;
         this.acceptor = acceptor;
         this.client = client;
     }
@@ -56,11 +56,9 @@ public class Request implements Runnable {
     public void run() {
         try {
             byte[] responseData = readResponse(
-                    client.send(request, HttpResponse.BodyHandlers.ofByteArray()));
+                    client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray()));
             if (responseData != null) {
-                MonitoredData result = new MonitoredData(responseData);
-                result.url(request.uri().toString());
-                acceptor.accept(result);
+                acceptor.accept( new MonitoredData(responseData, httpRequest.uri().toString()));
                 return;
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
@@ -72,9 +70,7 @@ public class Request implements Runnable {
             Thread.currentThread().interrupt();
         }
         
-        MonitoredData result = new MonitoredData(new byte[0]);
-        result.url(request.uri().toString());
-        acceptor.accept(result);
+        acceptor.accept(new MonitoredData(new byte[0], httpRequest.uri().toString()));
     }
 
     private byte[] readResponse(final HttpResponse<byte[]> response) throws HttpClientException {
