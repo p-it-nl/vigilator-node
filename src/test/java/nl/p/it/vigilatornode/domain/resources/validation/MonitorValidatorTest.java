@@ -121,6 +121,24 @@ public class MonitorValidatorTest {
                 }
             ]
         }""";
+    private static final String RESPONSE_WITH_ONE_STATUS_COMPONENT_WITH_DATETIME_AS_INTEGER = """
+        {
+            "environment": "prod",
+            "status": [
+                {
+                    "name": "HttpServer",
+                    "items": {
+                        "threads active": "1",
+                        "status": "ACTIVE",
+                        "threads completed": "82388",
+                        "maximum pool size": "100",
+                        "threads queued": "0",
+                        "pool size": "10"
+                    },
+                    "datetime": %s
+                }
+            ]
+        }""";
     private static final String RESPONSE_WITH_STATUS_COMPONENTS = """
         {
             "environment": "prod",
@@ -304,6 +322,18 @@ public class MonitorValidatorTest {
         assertTrue(result.getWarnings().isEmpty());
     }
 
+    @Test
+    public void testValidateWithDatetimeAsInteger() {
+        MonitoredData result = getResultWith(RESPONSE_WITH_ONE_STATUS_COMPONENT_WITH_DATETIME_AS_INTEGER.formatted(System.currentTimeMillis()));
+        Map<String, MonitoredPart> parts = getItemParts();
+        String name = NAME;
+
+        classUnderTest.validate(result, parts, name);
+
+        assertTrue(result.isHealthy());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+    
     @Test
     public void testValidateWithJSONHavingTwoStatusComponents() {
         MonitoredData result = getResultWith(RESPONSE_WITH_STATUS_COMPONENTS.formatted(System.currentTimeMillis(), System.currentTimeMillis()));
