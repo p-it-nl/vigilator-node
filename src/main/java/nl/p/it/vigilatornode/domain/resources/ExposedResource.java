@@ -92,10 +92,9 @@ public class ExposedResource extends MonitoredResource {
             LOGGER.log(ERROR, "Excepting during request from {0} with "
                     + "exception being: {1}", getClass().getSimpleName(), ex);
             take++;
-            MonitoredData result = new MonitoredData(ex.getMessage().getBytes());
+            MonitoredData result = new MonitoredData(ex.getMessage().getBytes(), url);
             result.addError(Error.withArgs(Error.NO_RESPONE, name, url));
             result.label(take);
-            result.url(url);
             data.add(result);
         }
     }

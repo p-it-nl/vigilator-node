@@ -377,8 +377,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWebReplyWithEmptyResult() {
         String expected = Error.WEB_VALIDATION_EMPTY.formatted(PART_URL);
-        MonitoredData result = new MonitoredData(new byte[0]);
-        result.url(PART_URL);
+        MonitoredData result = new MonitoredData(new byte[0], PART_URL);
         Map<String, MonitoredPart> parts = getPartsWithWeb(true);
         String name = NAME;
 
@@ -427,8 +426,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWebReplyWithValidResponseMissingTitleCondition() {
         String expected = Warning.WEB_VALIDATION_MISSING_TITLE.formatted(PART_URL);
-        MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_VALID.getBytes());
-        result.url(PART_URL);
+        MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_VALID.getBytes(), PART_URL);
         Map<String, MonitoredPart> parts = getPartsWithWeb(false);
         String name = NAME;
 
@@ -441,8 +439,7 @@ public class MonitorValidatorTest {
     @Test
     public void testValidateWebReplyWithInvalidResponse() {
         String expected = Error.WEB_VALIDATION_FAILED.formatted(PART_URL);
-        MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_INVALID.getBytes());
-        result.url(PART_URL);
+        MonitoredData result = new MonitoredData(RESPONSE_WEB_REPLY_INVALID.getBytes(), PART_URL);
         Map<String, MonitoredPart> parts = getPartsWithWeb(true);
         String name = NAME;
 
@@ -453,10 +450,7 @@ public class MonitorValidatorTest {
     }
 
     private MonitoredData getResultWith(final String data) {
-        MonitoredData monitoredData = new MonitoredData(data.getBytes());
-        monitoredData.url(PART_URL);
-
-        return monitoredData;
+        return new MonitoredData(data.getBytes(), PART_URL);
     }
 
     private Map<String, MonitoredPart> getItemParts() {

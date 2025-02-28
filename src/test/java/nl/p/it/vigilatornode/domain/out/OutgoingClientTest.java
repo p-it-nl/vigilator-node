@@ -24,15 +24,13 @@ import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.HttpClientException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for outgoing client
@@ -42,7 +40,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class OutgoingClientTest {
 
-    private static OutgoingClient classUnderTest;
+    private static OutgoingClient classUnderTest;//NOSONAR: required state for test
 
     private static final String INVALID_URL = "localhost";
     private static final String URL = "https://localhost.com/somewhere";
@@ -59,7 +57,7 @@ public class OutgoingClientTest {
     public void scheduleRequestWithoutAnyValues() throws HttpClientException {
         CustomException expectedException = CustomException.INVALID_URL;
         String url = null;
-        Acceptor acceptor = null;
+        Acceptor<MonitoredData> acceptor = null;
 
         VigilatorNodeException exception = assertThrows(HttpClientException.class,
                 () -> classUnderTest.scheduleRequest(url, acceptor));

@@ -30,7 +30,7 @@ public class ErrorTest {
 
     @Test
     public void baseError() {
-        String error = Error.ERROR;
+        String error = Error.GENERAL_ERROR;
 
         assertNotNull(error);
     }
@@ -39,7 +39,7 @@ public class ErrorTest {
     public void errorWithOnePlaceholderAndWithOneArgument() {
         String argument = ARG_1;
 
-        String error = Error.withArgs(Error.ERROR, argument);
+        String error = Error.withArgs(Error.GENERAL_ERROR, argument);
 
         assertNotNull(error);
         assertTrue(error.contains(argument));
@@ -50,7 +50,7 @@ public class ErrorTest {
         String argument = null;
         String expected = "null";
 
-        String error = Error.withArgs(Error.ERROR, argument);
+        String error = Error.withArgs(Error.GENERAL_ERROR, argument);
 
         assertNotNull(error);
         assertTrue(error.contains(expected));
@@ -59,9 +59,9 @@ public class ErrorTest {
     @Test
     public void errorWithOnePlaceholderAndWithEmptyArgument() {
         String argument = "";
-        String original = Error.ERROR;
+        String original = Error.GENERAL_ERROR;
 
-        String error = Error.withArgs(Error.ERROR, argument);
+        String error = Error.withArgs(Error.GENERAL_ERROR, argument);
 
         assertNotNull(error);
         assertTrue((error.length()) == (original.length() - 2));
@@ -72,7 +72,7 @@ public class ErrorTest {
         String argument = ARG_1;
         String argumentTwo = ARG_2;
 
-        String error = Error.withArgs(Error.ERROR, argumentTwo, argument);
+        String error = Error.withArgs(Error.GENERAL_ERROR, argumentTwo, argument);
 
         assertNotNull(error);
         assertTrue(error.contains(argumentTwo));

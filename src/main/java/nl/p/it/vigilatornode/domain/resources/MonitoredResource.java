@@ -34,7 +34,7 @@ public abstract class MonitoredResource {
     protected final Map<String, MonitoredPart> parts;
     protected final List<MonitoredData> data;
 
-    public MonitoredResource() {
+    protected MonitoredResource() {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
         data = new ArrayList<>();
@@ -48,11 +48,9 @@ public abstract class MonitoredResource {
      */
     public void decorate(final String decorator, final String value) {
         boolean hasDecorator = decorator != null && !decorator.isEmpty();
-        if (hasDecorator && !parts.containsKey(decorator)) {
-            parts.put(decorator, new MonitoredPart());
-        }
-
+        
         if (hasDecorator) {
+            parts.computeIfAbsent(decorator, part -> new MonitoredPart());
             parts.get(decorator).addItem(value, value);
         }
     }
@@ -69,9 +67,7 @@ public abstract class MonitoredResource {
         if (hasDecorator && MonitoredResourceConfig.TYPE.equals(decorator)) {
             config.set(key, value);
         } else if (hasDecorator) {
-            if (!parts.containsKey(decorator)) {
-                parts.put(decorator, new MonitoredPart());
-            }
+            parts.computeIfAbsent(decorator, part -> new MonitoredPart());
             parts.get(decorator).addItem(key, value);
         }
     }

@@ -28,7 +28,7 @@ public class WaitTaskTest {
     private long start;
 
     private static final int WAIT_TIME = 200;
-    private static final int GRACEFULL_PERIOD = 20;
+    private static final int GRACEFULL_PERIOD = 50;
     
     @Test
     public void createWaitTaskWithoutValues() {

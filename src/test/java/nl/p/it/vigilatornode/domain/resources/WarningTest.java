@@ -30,7 +30,7 @@ public class WarningTest {
 
     @Test
     public void baseWarning() {
-        String warning = Warning.WARNING;
+        String warning = Warning.GENERAL_WARNING;
 
         assertNotNull(warning);
     }
@@ -39,7 +39,7 @@ public class WarningTest {
     public void warningWithOnePlaceholderAndWithOneArgument() {
         String argument = ARG_1;
 
-        String warning = Warning.withArgs(Warning.WARNING, argument);
+        String warning = Warning.withArgs(Warning.GENERAL_WARNING, argument);
 
         assertNotNull(warning);
         assertTrue(warning.contains(argument));
@@ -50,7 +50,7 @@ public class WarningTest {
         String argument = null;
         String expected = "null";
 
-        String warning = Warning.withArgs(Warning.WARNING, argument);
+        String warning = Warning.withArgs(Warning.GENERAL_WARNING, argument);
 
         assertNotNull(warning);
         assertTrue(warning.contains(expected));
@@ -59,9 +59,9 @@ public class WarningTest {
     @Test
     public void warningWithOnePlaceholderAndWithEmptyArgument() {
         String argument = "";
-        String original = Warning.WARNING;
+        String original = Warning.GENERAL_WARNING;
 
-        String warning = Warning.withArgs(Warning.WARNING, argument);
+        String warning = Warning.withArgs(Warning.GENERAL_WARNING, argument);
 
         assertNotNull(warning);
         assertTrue((warning.length()) == (original.length() - 2));
@@ -72,7 +72,7 @@ public class WarningTest {
         String argument = ARG_1;
         String argumentTwo = ARG_2;
 
-        String warning = Warning.withArgs(Warning.WARNING, argumentTwo, argument);
+        String warning = Warning.withArgs(Warning.GENERAL_WARNING, argumentTwo, argument);
 
         assertNotNull(warning);
         assertTrue(warning.contains(argumentTwo));

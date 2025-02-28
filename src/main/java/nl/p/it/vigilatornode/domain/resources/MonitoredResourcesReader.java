@@ -79,19 +79,9 @@ public class MonitoredResourcesReader {
      */
     public List<MonitoredResource> read(final String resourcesFilesLocation) throws IncorrectResourceFileException {
         if (resourcesFilesLocation != null && !resourcesFilesLocation.isEmpty()) {
-
             File directory = new File(resourcesFilesLocation);
             if (directory.exists()) {
-                for (File entry : directory.listFiles()) {
-                    try (InputStream resourceFileStream = new FileInputStream(entry)) {
-                        read(resourceFileStream);
-                    } catch (IncorrectResourceFileException ex) {
-                        throw new IncorrectResourceFileException(CustomException.INVALID_RESOURCE_FILE, entry.getName(), ex.getLine(),ex.getMessage());
-                    } catch (IOException ex) {
-                        LOGGER.log(ERROR, "Not able to read resource files in {0}, exception: {1}", resourcesFilesLocation, ex);
-                        throw new IncorrectResourceFileException(CustomException.COULD_NOT_READ_RESOURCE_FILES);
-                    }
-                }
+                readFilesInDirectory(directory, resourcesFilesLocation);
             } else {
                 throw new IncorrectResourceFileException(CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST, resourcesFilesLocation);
             }
@@ -100,6 +90,19 @@ public class MonitoredResourcesReader {
         }
 
         return List.copyOf(resources);
+    }
+
+    private void readFilesInDirectory(final File directory, final String resourcesFilesLocation) throws IncorrectResourceFileException {
+        for (File entry : directory.listFiles()) {
+            try (InputStream resourceFileStream = new FileInputStream(entry)) {
+                read(resourceFileStream);
+            } catch (IncorrectResourceFileException ex) {
+                throw new IncorrectResourceFileException(CustomException.INVALID_RESOURCE_FILE, entry.getName(), ex.getLine(), ex.getMessage());
+            } catch (IOException ex) {
+                LOGGER.log(ERROR, "Not able to read resource files in {0}, exception: {1}", resourcesFilesLocation, ex);
+                throw new IncorrectResourceFileException(CustomException.COULD_NOT_READ_RESOURCE_FILES);
+            }
+        }
     }
 
     private void read(final InputStream resourceFileStream) throws IOException, IncorrectResourceFileException {
@@ -130,7 +133,7 @@ public class MonitoredResourcesReader {
                             depth = 0;
                         }
                         case ENTER -> {
-                            continue;
+                            // continue
                         }
                         default -> {
                             output.write(b);
@@ -176,15 +179,11 @@ public class MonitoredResourcesReader {
             case RESOURCE_INTERNAL ->
                 current = new InternalResource();
             default -> {
-                IncorrectResourceFileException ex = new IncorrectResourceFileException(CustomException.UNEXPECTED_RESOURCE, type);
-                ex.setLine(line);
-                throw ex;
+                throw new IncorrectResourceFileException(line, CustomException.UNEXPECTED_RESOURCE, type, line);
             }
         }
 
-        if (current != null) {
-            resources.add(current);
-        }
+        resources.add(current);
     }
 
     private void decorate(final String value) {

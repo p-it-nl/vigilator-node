@@ -101,6 +101,17 @@ public class ConditionValidator {
         return valueToMatch.equals(conditionToMatch);
     }
 
+    /**
+     * FUTURE_WORK: extract and use temportal type -> String temporalType =
+     * condition.substring(startPositionTemporalIndicator, conditionSize);
+     *
+     * @param valueSize the value size
+     * @param conditionSize the condition size
+     * @param value the value
+     * @param condition the condition
+     * @param type the condition type
+     * @return whether matches the condition
+     */
     private boolean matchesValueCondition(final int valueSize, final int conditionSize, final String value, final String condition, final ConditionType type) {
         if (valueSize == 0) {
             return false;
@@ -116,13 +127,10 @@ public class ConditionValidator {
                 temporalAmountString = temporalAmountString.substring(1);
                 temporalAmountString = trimFirstSpaceIfExists(temporalAmountString);
                 int temporalAmount = Integer.parseInt(temporalAmountString.trim());
-
-                String temporalType = condition.substring(startPositionTemporalIndicator, conditionSize);
-
                 if (BIGGER == type) {
-                    return matchesDateCondition(value, temporalAmount, temporalType, AFTER);
+                    return matchesDateCondition(value, temporalAmount, AFTER);
                 } else {
-                    return matchesDateCondition(value, temporalAmount, temporalType, BEFORE);
+                    return matchesDateCondition(value, temporalAmount, BEFORE);
                 }
             } else {
                 int parsedValue = Integer.parseInt(valueToMatch);
@@ -141,15 +149,15 @@ public class ConditionValidator {
     }
 
     /**
-     * FUTURE_WORK: add more temporal types
+     * FUTURE_WORK: add more temporal types add: @param temporalType the
+     * temporal type (currently supports: `min`)
      *
      * @param value the value to match
      * @param temporalAmount the amount to match against
-     * @param temporalType the temporal type (currently supports: `min`)
      * @param type the condition type (BEFORE / AFTER)
      * @return whether value matches
      */
-    private boolean matchesDateCondition(final String value, final int temporalAmount, final String temporalType, final ConditionType type) {
+    private boolean matchesDateCondition(final String value, final int temporalAmount, final ConditionType type) {
         try {
             long datetimeValue = Long.parseLong(value);
             if (datetimeValue > 1000000000) {

@@ -17,16 +17,13 @@ package nl.p.it.vigilatornode.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
-import static java.lang.System.Logger.Level.ERROR;
-import static java.lang.System.Logger.Level.INFO;
-import static java.lang.System.Logger.Level.WARNING;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.UnstartableException;
-import nl.p.it.vigilatornode.server.StatusHandler;
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
+import static java.lang.System.Logger.Level.WARNING;
 
 /**
  * Http server implementation for monitoring requests
@@ -35,7 +32,6 @@ import nl.p.it.vigilatornode.server.StatusHandler;
  */
 public class HttpServer {
 
-    private ThreadPoolExecutor executor;
     private com.sun.net.httpserver.HttpServer server;//NOSONAR, com.sun is fine here
 
     private final NodeConfig config;
@@ -74,7 +70,7 @@ public class HttpServer {
 
         try {
             this.server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(config.getPort()), 0);//NOSONAR, com.sun is fine here
-            executor = config.getPoolExecutor();
+            ThreadPoolExecutor executor = config.getPoolExecutor();
             server.setExecutor(executor);
             server.createContext("/status", new StatusHandler(config));
             server.start();

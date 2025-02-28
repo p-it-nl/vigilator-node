@@ -22,28 +22,28 @@ package nl.p.it.vigilatornode.exception;
  */
 public class IncorrectResourceFileException extends VigilatorNodeException {
 
-    private int line;
-    
+    private final int line;
+
     public IncorrectResourceFileException(final CustomException exception) {
         super(exception);
+        this.line = 0;
     }
-    
+
     public IncorrectResourceFileException(final CustomException exception, final int line) {
         super(exception);
         this.line = line;
     }
-    
+
     public IncorrectResourceFileException(final CustomException exception, final Object... args) {
         super(exception, args);
+        this.line = 0;
     }
-        
-    /**
-     * @param line the line the exception occurred at
-     */
-    public void setLine(final int line) {
+
+    public IncorrectResourceFileException(final int line, final CustomException exception, final Object... args) {
+        super(exception, args);
         this.line = line;
     }
-    
+
     /**
      * @return the line the exception occurred at or 0
      */

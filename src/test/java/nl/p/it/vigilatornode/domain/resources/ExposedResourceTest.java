@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -30,24 +29,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(MockitoExtension.class)
 public class ExposedResourceTest {
-    
+
     @Mock
     private OutgoingClient client;
-    
-    private ExposedResource classUnderTest;
-    
-    @BeforeEach
-    public void setUp() {
-        classUnderTest = new ExposedResource();
-    }
-    
+
     @Test
     public void connectWithoutClient() {
-        assertDoesNotThrow(() -> classUnderTest.connect(null));
+        assertDoesNotThrow(() -> new ExposedResource().connect(null));
     }
-    
+
     @Test
     public void connectWithClient() {
-        assertDoesNotThrow(() -> classUnderTest.connect(client));
+        assertDoesNotThrow(() -> new ExposedResource().connect(client));
     }
 }
