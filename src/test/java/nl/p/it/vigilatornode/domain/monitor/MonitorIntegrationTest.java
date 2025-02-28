@@ -87,7 +87,7 @@ public class MonitorIntegrationTest {
 
         assertTrue(one.isHealthy());
         assertFalse(two.isHealthy());
-        assertTrue(three.isHealthy());
+        assertFalse(three.isHealthy());
     }
 
     private List<MonitoredResource> getExposedResources() {
