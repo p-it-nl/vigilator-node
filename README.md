@@ -82,8 +82,11 @@ The following condition types are available to configure conditions for a resour
 - `<`, the value is less then | example: `< 40`.
 
 #### Types
-Some conditions can be combined with a type, mainly usable for temporal conditions.
-The following types are available:
+
+Every number in a condition can be annotated with a `%`, making the condition validate a percentage.
+
+Some conditions can be combined with a temporal type.
+The following temporal types are available:
 - `min`, specifies the value is of type minutes and can be used with the `>` and `<` signs | example: `< 5min` indicates the value must be less then 5 min old.
 - ... more coming
 
