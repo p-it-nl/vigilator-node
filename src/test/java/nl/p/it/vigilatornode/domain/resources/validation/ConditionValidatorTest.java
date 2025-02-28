@@ -327,9 +327,109 @@ public class ConditionValidatorTest {
     }
 
     @Test
+    public void conditionForValueIsBiggerThenWithAPercentValueBiggerThenPercentCondition() {
+        String value = "88%";
+        String condition = "> 80%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForValueIsBiggerThenWithAPercentValueBiggerThenPercentCondition_withWarningIndicationInCondition() {
+        String value = "88%";
+        String condition = "> 80% W";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForValueIsBiggerThenWithANumberValueBiggerThenPercentCondition() {
+        String value = "88";
+        String condition = "> 80%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForValueIsBiggerThenWithAPercentValueSmallerThenPercentCondition() {
+        String value = "70%";
+        String condition = "> 80%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void conditionForValueIsBiggerThenWithAPercentValueEqualToPercentCondition() {
+        String value = "80%";
+        String condition = "> 80%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
+    }
+
+    @Test
     public void conditionForValueIsBiggerThenWithAValueNotANumber() {
         String value = "mock";
         String condition = "> 80";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingLessThenPercentCondition() {
+        String value = "20%";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithNumberValueBeingLessThenPercentCondition() {
+        String value = "20";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithNumberValueBeingLessThenPercentCondition_withWarningIndicationInCondition() {
+        String value = "20%";
+        String condition = "< 40% W";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingEqualToPercentCondition() {
+        String value = "40%";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingBiggerThenPercentCondition() {
+        String value = "60%";
+        String condition = "< 40%";
 
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
@@ -394,6 +494,46 @@ public class ConditionValidatorTest {
         boolean result = classUnderTest.validateMeetsCriteria(value, condition);
 
         assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingLessThenPercentCondition() {
+        String value = "20%";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithNumberValueBeingLessThenPercentCondition() {
+        String value = "20";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingEqualToPercentCondition() {
+        String value = "40%";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void conditionForIsLessThenWithPercentValueBeingBiggerThenPercentCondition() {
+        String value = "60%";
+        String condition = "< 40%";
+
+        boolean result = classUnderTest.validateMeetsCriteria(value, condition);
+
+        assertFalse(result);
     }
 
     @Test
