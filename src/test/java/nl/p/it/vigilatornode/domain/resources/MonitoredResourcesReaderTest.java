@@ -66,7 +66,7 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withNotExistingResourcesFilesLocation() {
-        CustomException expectedException = CustomException.DIRECTORY_DOES_NOT_EXIST;
+        CustomException expectedException = CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST;
         String resourcesFilesLocation = DOES_NOT_EXIST;
 
         VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
@@ -78,11 +78,14 @@ public class MonitoredResourcesReaderTest {
 
     @Test
     public void read_withEmptyFolder() throws IncorrectResourceFileException {
-        String resourcesFilesLocation = PATH_TO_RESOURCES + FOLDER_EMPTY;
+        CustomException expectedException = CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST;
+        String resourcesFilesLocation = FOLDER_EMPTY;
 
-        List<MonitoredResource> result = classUnderTest.read(resourcesFilesLocation);
+        VigilatorNodeException exception = assertThrows(IncorrectResourceFileException.class, () -> {
+            classUnderTest.read(resourcesFilesLocation);
+        });
 
-        assertTrue(result.isEmpty());
+        assertEquals(String.format(expectedException.getMessage(), resourcesFilesLocation), exception.getMessage());
     }
 
     @Test
