@@ -46,7 +46,7 @@ public enum CustomException {
             The specified location for reading monitored resources files could 
             not be accessed, validate the location is correct and the application 
             is permitted to access the location"""),
-    DIRECTORY_DOES_NOT_EXIST("The specified directory: %s does not exist"),
+    DIRECTORY_EMPTY_OR_DOES_NOT_EXIST("The specified directory: %s does not exist or is empty"),
     INVALID_RESOURCE_FILE("Incorrect resource file: %s, line %s, error: %s"),
     OUT_OF_CONTEXT_RESOURCE_NAME("Resource name given outside the context of a resource"),
     TO_DEEP_TABBING("Unexpected character detected, tab depth deeper then expected"),

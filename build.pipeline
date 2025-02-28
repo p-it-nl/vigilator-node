@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    tools {
+        maven 'MAVEN_HOME'
+        jdk 'JDK_21'
+    }
+
+    stages {
+        stage('Clone vigilator-node') {
+            steps {
+                git url: 'https://github.com/p-it-nl/vigilator-node.git'
+            }
+		}
+        
+		stage('Build and test vigilator-node') {
+		    steps {
+			   sh 'mvn clean install'
+		    }
+		}
+				
+		stage('Run sonar-scanner for vigilator-node') {
+		    steps {
+		        sh 'sonar-scanner -Dsonar.login={sonar-token}'
+		    }
+		}
+		
+		stage('Run vigilator-node on test') {
+		    steps {
+		        sh 'echo "todo"'
+		    }
+		}
+
+    }
+    post { 
+        always { 
+            deleteDir()
+       }
+    }
+}

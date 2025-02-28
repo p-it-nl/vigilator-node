@@ -93,7 +93,7 @@ public class MonitoredResourcesReader {
                     }
                 }
             } else {
-                throw new IncorrectResourceFileException(CustomException.DIRECTORY_DOES_NOT_EXIST, resourcesFilesLocation);
+                throw new IncorrectResourceFileException(CustomException.DIRECTORY_EMPTY_OR_DOES_NOT_EXIST, resourcesFilesLocation);
             }
         } else {
             LOGGER.log(WARNING, "MonitoredResourcesReader.read() was called without an resources files location, the action will be ignored");
