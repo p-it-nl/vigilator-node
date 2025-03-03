@@ -125,7 +125,6 @@ public class ConditionValidator {
             int startPositionTemporalIndicator = conditionToMatch.indexOf(MIN);
             if (NPOS != startPositionTemporalIndicator) {
                 String temporalAmountString = conditionToMatch.substring(0, startPositionTemporalIndicator);
-                temporalAmountString = temporalAmountString.substring(1);
                 temporalAmountString = trimFirstSpaceIfExists(temporalAmountString);
                 int temporalAmount = Integer.parseInt(temporalAmountString.trim());
                 if (BIGGER == type) {
@@ -178,7 +177,7 @@ public class ConditionValidator {
     }
 
     private String trimFirstSpaceIfExists(final String value) {
-        if (Character.isSpaceChar(value.charAt(0))) {
+        if (value != null && !value.isEmpty() && Character.isSpaceChar(value.charAt(0))) {
             return value.substring(1, value.length());
         } else {
             return value;
