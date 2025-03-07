@@ -53,11 +53,13 @@ public class LogConfig {
             Logger logger = Logger.getLogger("");
 
             String logfile = config.getLogfile();
-            Files.createDirectories(Paths.get(logfile.substring(0, logfile.lastIndexOf("/"))));
-            FileHandler file = new FileHandler(logfile);
-            file.setFormatter(new SimpleFormatter());
-            file.setLevel(Level.INFO);
-            logger.addHandler(file);
+            if (logfile != null && !logfile.isEmpty()) {
+                Files.createDirectories(Paths.get(logfile.substring(0, logfile.lastIndexOf("/"))));
+                FileHandler file = new FileHandler(logfile);
+                file.setFormatter(new SimpleFormatter());
+                file.setLevel(Level.INFO);
+                logger.addHandler(file);
+            }
         } catch (IOException exception) {
             throw new UnstartableException(CustomException.COULD_NOT_CONFIGURE_LOGGER);
         }

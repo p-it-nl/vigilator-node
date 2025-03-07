@@ -33,8 +33,8 @@ public class StatusService implements Service {
             final Map<String, String> params,
             final HttpExchange exchange) throws VigilatorNodeException {
         
-        
-        
+        System.out.println("hoi");
+        System.out.println();
     }
 
 }
