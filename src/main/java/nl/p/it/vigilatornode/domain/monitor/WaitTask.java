@@ -38,7 +38,7 @@ public class WaitTask implements Runnable {
     public void run() {
         try {
             Thread.sleep(millisToWait);
-            
+
             if (notifier != null) {
                 notifier.doNotify();
             }

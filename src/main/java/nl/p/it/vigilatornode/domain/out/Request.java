@@ -63,7 +63,7 @@ public class Request implements Runnable {
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
             }
-        } catch (HttpClientException | IOException ex) {
+        } catch (IOException ex) {
             LOGGER.log(ERROR, "Request failed with exception: {1}", ex);
         } catch (InterruptedException ex) {
             LOGGER.log(ERROR, "Request got interrupted: {1}", ex);
@@ -73,20 +73,38 @@ public class Request implements Runnable {
         acceptor.accept(new MonitoredData(new byte[0], httpRequest.uri().toString()));
     }
 
-    private byte[] readResponse(final HttpResponse<byte[]> response) throws HttpClientException {
-        switch (response.statusCode()) {
-            case 200, 201 -> {
-                return response.body();
-            }
-            case 401, 403 -> {
-                throw new HttpClientException(CustomException.THE_REQUEST_WAS_NOT_AUTHORIZED);
-            }
-            default -> {
-                LOGGER.log(ERROR, "Unexpected response code received from url: {0} being: {1}, "
-                        + "containing message: {2}", response.uri(), response.statusCode(), new String(response.body()));
-            }
-        }
-
-        return new byte[0];
+    /**
+     * FUTURE_WORK: decide later Was:
+     * <p>
+     * {@snippet
+     * switch (response.statusCode()) {
+     *  case 200, 201 -> {
+     *      return response.body();
+     *  }
+     *  case 401, 403 -> {
+     *      throw new HttpClientException(CustomException.THE_REQUEST_WAS_NOT_AUTHORIZED);
+     *  }
+     *  default -> {
+     *      LOGGER.log(ERROR, "Unexpected response code received from url: {0} being: {1}, "
+     *      + "containing message: {2}", response.uri(), response.statusCode(), new String(response.body()));
+     *  }
+     * }
+     *
+     * return new byte[0];
+     * }
+     *
+     * But is changed because as long as there is response, we want to validate
+     * it. However, the status code might still be relevant so maybe add
+     * accepted status code to resource configuration or something similar.
+     * Vital though to keep it simple, maybe best is to just accept all status
+     * codes and allow configuring something like, statusCode: == 500 and when a
+     * condition for status code exists, take the status code into account with
+     * validating the responsed
+     *
+     * @param response the received response
+     * @return the bytes
+     */
+    private byte[] readResponse(final HttpResponse<byte[]> response) {
+        return response.body();
     }
 }
