@@ -15,7 +15,6 @@
  */
 package nl.p.it.vigilatornode.domain.monitor;
 
-import static java.lang.System.Logger.Level.ERROR;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
@@ -24,8 +23,8 @@ import nl.p.it.vigilatornode.domain.resources.ExposedResource;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
+import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
-import nl.p.it.vigilatornode.domain.data.MonitoredData;
 
 /**
  * Monitor, schedules monitor tasks for resources and keeps track of results

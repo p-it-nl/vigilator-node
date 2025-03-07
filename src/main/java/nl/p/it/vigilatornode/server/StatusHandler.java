@@ -18,14 +18,14 @@ package nl.p.it.vigilatornode.server;
 import com.sun.net.httpserver.HttpExchange;//NOSONAR, com.sun is fine here
 import com.sun.net.httpserver.HttpHandler;//NOSONAR, com.sun is fine here
 import java.io.IOException;
-import static java.lang.System.Logger.Level.INFO;
-import static java.lang.System.Logger.Level.WARNING;
-import static java.lang.System.Logger.Level.ERROR;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.domain.status.StatusService;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MethodNotAllowedException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
+import static java.lang.System.Logger.Level.INFO;
+import static java.lang.System.Logger.Level.WARNING;
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * Article handler provides the endpoint for retrieving articles
