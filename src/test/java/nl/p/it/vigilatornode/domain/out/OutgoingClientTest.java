@@ -31,6 +31,11 @@ import org.junit.jupiter.api.BeforeAll;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Mock;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for outgoing client
@@ -40,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class OutgoingClientTest {
 
+    private static ThreadPoolExecutor threadPoolExecutor;
     private static OutgoingClient classUnderTest;//NOSONAR: required state for test
 
     private static final String INVALID_URL = "localhost";
@@ -48,8 +54,8 @@ public class OutgoingClientTest {
     @BeforeAll
     public static void setUp() {
         NodeConfig config = mock(NodeConfig.class);
-        when(config.getPoolExecutor()).thenReturn(
-                new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(10)));
+        threadPoolExecutor = mock(ThreadPoolExecutor.class);
+        when(config.getPoolExecutor()).thenReturn(threadPoolExecutor);
         classUnderTest = OutgoingClient.getInstance(config);
     }
 
@@ -98,5 +104,17 @@ public class OutgoingClientTest {
         };
 
         assertDoesNotThrow(() -> classUnderTest.scheduleRequest(url, acceptor));
+        verify(threadPoolExecutor, atLeastOnce()).submit(any(Request.class));
+    }
+
+    @Test
+    public void scheduleRequestWithValidUrlAndAcceptorIgnoringTLSIssues() throws HttpClientException {
+        String url = URL;
+        Acceptor<MonitoredData> acceptor = (MonitoredData data) -> {
+        };
+        Option option = Option.IGNORE_TLS_ISSUES;
+
+        assertDoesNotThrow(() -> classUnderTest.scheduleRequest(url, acceptor, option));
+        verify(threadPoolExecutor, atLeastOnce()).submit(any(Request.class));
     }
 }

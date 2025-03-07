@@ -18,8 +18,8 @@ package nl.p.it.vigilatornode.domain.resources;
 import java.util.List;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * General tests for monitored resource
