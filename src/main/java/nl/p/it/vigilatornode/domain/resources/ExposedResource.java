@@ -21,6 +21,7 @@ import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.exception.HttpClientException;
 import static java.lang.System.Logger.Level.ERROR;
+import nl.p.it.vigilatornode.domain.out.Option;
 
 /**
  * The ExposedResource class is a monitored resource available via internet
@@ -87,7 +88,8 @@ public class ExposedResource extends MonitoredResource {
 
     private void retrieveUpdateFromResource(final String url) {
         try {
-            client.scheduleRequest(url, getAcceptor());
+            client.scheduleRequest(url, getAcceptor(),
+                    config.getIgnoreTLSIssues() ? Option.IGNORE_TLS_ISSUES : null);
         } catch (HttpClientException ex) {
             LOGGER.log(ERROR, "Excepting during request from {0} with "
                     + "exception being: {1}", getClass().getSimpleName(), ex);
@@ -104,7 +106,7 @@ public class ExposedResource extends MonitoredResource {
             take++;
             result.label(take);
             data.add(result);
-            
+
             if (result.hasData()) {
                 if (resourceMonitorEndpoint.equals(result.getUrl())) {
                     monitorValidator.validate(result, parts, name);

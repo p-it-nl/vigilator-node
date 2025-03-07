@@ -58,7 +58,7 @@ public class Request implements Runnable {
             byte[] responseData = readResponse(
                     client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray()));
             if (responseData != null) {
-                acceptor.accept( new MonitoredData(responseData, httpRequest.uri().toString()));
+                acceptor.accept(new MonitoredData(responseData, httpRequest.uri().toString()));
                 return;
             } else {
                 LOGGER.log(DEBUG, "Empty response received, this can happen no data was relevant for the request");
@@ -69,7 +69,7 @@ public class Request implements Runnable {
             LOGGER.log(ERROR, "Request got interrupted: {1}", ex);
             Thread.currentThread().interrupt();
         }
-        
+
         acceptor.accept(new MonitoredData(new byte[0], httpRequest.uri().toString()));
     }
 
@@ -82,8 +82,8 @@ public class Request implements Runnable {
                 throw new HttpClientException(CustomException.THE_REQUEST_WAS_NOT_AUTHORIZED);
             }
             default -> {
-                LOGGER.log(ERROR, "Unexpected response code received being: {0}, "
-                        + "containing message: {1}", response.statusCode(), new String(response.body()));
+                LOGGER.log(ERROR, "Unexpected response code received from url: {0} being: {1}, "
+                        + "containing message: {2}", response.uri(), response.statusCode(), new String(response.body()));
             }
         }
 

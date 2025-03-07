@@ -42,7 +42,7 @@ import nl.p.it.vigilatornode.exception.HttpClientException;
 public class OutgoingClient {
 
     private HttpClient client;
-    private HttpClient clientIgnoringTLSIssues;
+    private final HttpClient clientIgnoringTLSIssues;
     private final HttpRequest.Builder builder;
     private final ThreadPoolExecutor executor;
 
@@ -120,18 +120,23 @@ public class OutgoingClient {
             boolean ignoreTLSIssues = false;
             if (options != null) {
                 for (Option option : options) {
-                    switch (option) {
-                        case IGNORE_TLS_ISSUES -> {
-                            ignoreTLSIssues = true;
+                    if (option != null) {
+                        switch (option) {
+                            case IGNORE_TLS_ISSUES -> {
+                                ignoreTLSIssues = true;
+                            }
                         }
                     }
                 }
             }
+            
             Request toSend = ignoreTLSIssues
                     ? new Request(request, acceptor, clientIgnoringTLSIssues)
                     : new Request(request, acceptor, client);
             executor.submit(toSend);
-        } catch (IllegalArgumentException | NullPointerException | URISyntaxException ex) {
+        } catch (NullPointerException ex) {
+            throw new HttpClientException(CustomException.INVALID_INPUT_FOR_REQUEST, url);
+        } catch (IllegalArgumentException | URISyntaxException ex) {
             throw new HttpClientException(CustomException.INVALID_URL, url);
         }
     }
