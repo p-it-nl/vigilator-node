@@ -21,13 +21,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.ERROR;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.RequestException;
 import nl.p.it.vigilatornode.exception.ServiceUnavailableException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
 
 /**
  * Helper for httpserver requests

@@ -26,7 +26,6 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.HttpClientException;
-import static java.lang.System.Logger.Level.INFO;
 
 /**
  * Client for outgoing requests
