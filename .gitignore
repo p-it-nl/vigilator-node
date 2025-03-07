@@ -36,3 +36,8 @@ build/
 !**/src/test/**/build/
 nb-configuration.xml
 nbactions.xml
+
+### Robot framework ###
+/tests/log.html
+/tests/output.xml
+/tests/report.html
