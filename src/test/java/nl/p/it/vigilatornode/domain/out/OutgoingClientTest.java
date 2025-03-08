@@ -53,7 +53,7 @@ public class OutgoingClientTest {
 
     @Test
     public void scheduleRequestWithoutAnyValues() throws HttpClientException {
-        CustomException expectedException = CustomException.INVALID_URL;
+        CustomException expectedException = CustomException.INVALID_INPUT_FOR_REQUEST;
         String url = null;
         Acceptor<MonitoredData> acceptor = null;
 
@@ -65,7 +65,7 @@ public class OutgoingClientTest {
 
     @Test
     public void scheduleRequestWithEmptyUrlAndHavingAcceptor() throws HttpClientException {
-        CustomException expectedException = CustomException.INVALID_URL;
+        CustomException expectedException = CustomException.INVALID_INPUT_FOR_REQUEST;
         String url = null;
         Acceptor<MonitoredData> acceptor = (MonitoredData data) -> {
         };

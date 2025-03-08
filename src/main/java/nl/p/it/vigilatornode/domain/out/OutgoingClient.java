@@ -80,7 +80,7 @@ public class OutgoingClient {
      * spread throughout the application
      *
      * @param config the configuration of the node
-     * @return the http client
+     * @return the outgoing client
      */
     public static synchronized OutgoingClient getInstance(final NodeConfig config) {
         if (instance == null) {

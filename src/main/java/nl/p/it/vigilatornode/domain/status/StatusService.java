@@ -35,6 +35,8 @@ public class StatusService implements Service {
         
         System.out.println("hoi");
         System.out.println();
+        
+        
     }
 
 }
