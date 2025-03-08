@@ -42,7 +42,7 @@ public class Monitor {
 
     private static final System.Logger LOGGER = System.getLogger(Monitor.class.getName());
 
-    public Monitor(final List<MonitoredResource> resources, final NodeConfig config) throws MonitorException {
+    Monitor(final List<MonitoredResource> resources, final NodeConfig config) throws MonitorException {
         if (config == null) {
             throw new MonitorException(CustomException.CONFIG_REQUIRED);
         }
