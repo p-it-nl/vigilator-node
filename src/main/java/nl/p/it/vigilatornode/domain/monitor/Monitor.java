@@ -25,6 +25,7 @@ import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
+import java.util.ArrayList;
 
 /**
  * Monitor, schedules monitor tasks for resources and keeps track of results
@@ -47,9 +48,9 @@ public class Monitor {
             throw new MonitorException(CustomException.CONFIG_REQUIRED);
         }
 
-        this.resources = resources;
         this.executor = config.getSingleThreadExecutor();
         this.defaultUpdateFrequency = config.getDefaultUpdateFrequency();
+        this.resources = (resources != null ? resources : new ArrayList<>());
         prepared = false;
     }
 
@@ -116,7 +117,7 @@ public class Monitor {
 
     private void timeout() {
         LOGGER.log(INFO, "Waiting before next update");
-        
+
         executor.submit(new WaitTask(defaultUpdateFrequency, timeoutFinished()));
     }
 

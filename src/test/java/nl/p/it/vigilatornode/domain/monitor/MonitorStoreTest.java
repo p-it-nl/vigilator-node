@@ -22,6 +22,7 @@ import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.CustomException;
 import nl.p.it.vigilatornode.exception.MonitorException;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,5 +82,39 @@ public class MonitorStoreTest {
 
         assertNotNull(monitor);
         assertEquals(resource, monitor.getResources().get(0));
+    }
+
+    @Test
+    public void getMonitorsWithoutARegisteredMonitor() throws MonitorException {
+        List<Monitor> monitors = classUnderTest.getMonitors();
+
+        assertNotNull(monitors);
+        assertTrue(monitors.isEmpty());
+    }
+
+    @Test
+    public void getMonitorsWithMonitorNotHavingAnyResources() throws MonitorException {
+        classUnderTest.buildMonitorFor(null, config);
+        List<Monitor> monitors = classUnderTest.getMonitors();
+
+        assertNotNull(monitors);
+        assertTrue(monitors.get(0).getResources().isEmpty());
+    }
+
+    @Test
+    public void getMonitorsWithMonitorHavingAResource() throws MonitorException {
+        MonitoredResource resource = new ExposedResource();
+
+        classUnderTest.buildMonitorFor(List.of(resource), config);
+        List<Monitor> monitors = classUnderTest.getMonitors();
+
+        assertNotNull(monitors);
+        List<MonitoredResource> resources = monitors.get(0).getResources();
+        assertEquals(resource, resources.get(0));
+    }
+    
+    @AfterEach
+    public void clear() {
+        classUnderTest.clear();
     }
 }

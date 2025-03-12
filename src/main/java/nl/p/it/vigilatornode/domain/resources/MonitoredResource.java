@@ -16,6 +16,7 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,11 @@ public abstract class MonitoredResource {
      * @return the data
      */
     public List<MonitoredData> getData() {
-        return data;
+        if (data != null) {
+            return data;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -117,6 +122,19 @@ public abstract class MonitoredResource {
      */
     public boolean isHealthy() {
         return !data.isEmpty() && data.getLast().isHealthy();
+    }
+
+    /**
+     * @return if the current status of this resource
+     * @see MonitoredData.isHealthy();
+     */
+    public MonitoredResourceStatus getStatus() {
+        if (!data.isEmpty()) {
+            MonitoredData last = data.getLast();
+            return new MonitoredResourceStatus(name, last.isHealthy(), last.getErrors(), last.getWarnings());
+        } else {
+            return new MonitoredResourceStatus(name, false, null, null);
+        }
     }
 
     /**
@@ -131,6 +149,7 @@ public abstract class MonitoredResource {
      * truncates the data based on DATA_LIMIT_AMOUNT to conserve memory usage
      */
     public void finaliseUpdate() {
+        take++;
         int diff = data.size() - DATA_LIMIT_AMOUNT;
         if (diff > 0) {
             for (int i = 0; i < diff; i++) {

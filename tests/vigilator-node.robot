@@ -31,7 +31,7 @@ Retrieve status update from Vigilator node
     [Tags]             Expecting status
     ${resp}=           GET On Session                         VigilatorNode                       /status      
 
-    Log To Console    ${resp[1]}
+    Log To Console    ${resp.text}
 
 Clear After - All tests
     Clean
