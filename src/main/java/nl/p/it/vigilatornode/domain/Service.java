@@ -16,6 +16,7 @@
 package nl.p.it.vigilatornode.domain;
 
 import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
 import java.util.Map;
 import nl.p.it.vigilatornode.exception.VigilatorNodeException;
 
@@ -32,10 +33,12 @@ public interface Service {
      * @param bytes the request body byte stream
      * @param params the parameters send with the request
      * @param exchange the exchange
+     * @throws IOException when problems occur during read/write actions on the
+     * exchange
      * @throws VigilatorNodeException when processing the request fails
      */
     void processRequest(
             final byte[] bytes,
             final Map<String, String> params,
-            final HttpExchange exchange) throws VigilatorNodeException;
+            final HttpExchange exchange) throws IOException, VigilatorNodeException;
 }

@@ -66,4 +66,18 @@ public class MonitorStore {
         return monitor;
     }
 
+    /**
+     * @return the registered monitors in the store
+     */
+    public List<Monitor> getMonitors() {
+        return registered;
+    }
+
+    /**
+     * removes all registered monitors
+     */
+    public void clear() {
+        registered.clear();
+    }
+
 }

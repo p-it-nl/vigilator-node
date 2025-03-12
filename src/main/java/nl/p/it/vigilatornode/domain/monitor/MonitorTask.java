@@ -15,7 +15,9 @@
  */
 package nl.p.it.vigilatornode.domain.monitor;
 
+import static java.lang.System.Logger.Level.ERROR;
 import java.util.List;
+import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 
 /**
@@ -28,6 +30,8 @@ public class MonitorTask implements Runnable {
     private final List<MonitoredResource> resources;
     private final Notifier notifier;
 
+    private static final System.Logger LOGGER = System.getLogger(MonitorTask.class.getName());
+
     public MonitorTask(final List<MonitoredResource> resources, final Notifier notifier) {
         this.resources = resources;
         this.notifier = notifier;
@@ -35,18 +39,22 @@ public class MonitorTask implements Runnable {
 
     @Override
     public void run() {
-        if (resources != null) {
-            for (MonitoredResource resource : resources) {
-                if (resource.getConfig().isActive()) {
-                    resource.updateStatus();
-                } else {
-                    // only updating resources that are activated to monitor
+        try {
+            if (resources != null) {
+                for (MonitoredResource resource : resources) {
+                    if (resource.getConfig().isActive()) {
+                        resource.updateStatus();
+                    } else {
+                        // only updating resources that are activated to monitor
+                    }
                 }
-            }
 
-        }
-        if (notifier != null) {
-            notifier.doNotify();
+            }
+            if (notifier != null) {
+                notifier.doNotify();
+            }
+        } catch (Exception ex) {
+            LOGGER.log(ERROR, "Exception in monitor task: {0}", ex);
         }
     }
 }

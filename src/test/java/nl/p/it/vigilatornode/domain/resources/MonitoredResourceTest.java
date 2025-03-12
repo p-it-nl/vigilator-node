@@ -282,6 +282,43 @@ public class MonitoredResourceTest {
         assertEquals(expected, result);
     }
 
+    @Test
+    public void getStatus_withoutValues_expectingDefault() {
+        boolean expected = false;
+
+        MonitoredResourceStatus result = classUnderTest.getStatus();
+
+        assertEquals(expected, result.isHealthy());
+        assertTrue(result.getErrors().isEmpty());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
+    public void getStatus_withLastMonitoredDataHealthy_expectingHealthy() {
+        boolean expected = true;
+
+        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        MonitoredResourceStatus result = classUnderTest.getStatus();
+
+        assertEquals(expected, result.isHealthy());
+        assertTrue(result.getErrors().isEmpty());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
+    public void getStatus_withLastMonitoredDataBeingUnhealthy_expectingFalse() {
+        boolean expected = false;
+
+        MonitoredData data = new MonitoredData(new byte[0]);
+        data.addError(ERROR);
+        classUnderTest.data.add(data);
+        MonitoredResourceStatus result = classUnderTest.getStatus();
+
+        assertEquals(expected, result.isHealthy());
+        assertFalse(result.getErrors().isEmpty());
+        assertTrue(result.getWarnings().isEmpty());
+    }
+
     public class TestResource extends MonitoredResource {
 
         public void updateStatus() {
