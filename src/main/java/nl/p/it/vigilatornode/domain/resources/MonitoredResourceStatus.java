@@ -15,6 +15,7 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,20 +27,20 @@ import java.util.List;
  */
 public class MonitoredResourceStatus {
 
-    private final String name;
-    private final boolean healthy;
+    private String name;
     private final List<String> errors;
     private final List<String> warnings;
 
-    public MonitoredResourceStatus(
-            final String name,
-            final boolean healthy,
-            final List<String> errors,
-            final List<String> warnings) {
+    public MonitoredResourceStatus() {
+        this.errors = new ArrayList<>();
+        this.warnings = new ArrayList<>();
+    }
+
+    /**
+     * @param name the name of the monitored resource this status is from
+     */
+    public void setName(final String name) {
         this.name = name;
-        this.healthy = healthy;
-        this.errors = errors;
-        this.warnings = warnings;
     }
 
     /**
@@ -53,7 +54,14 @@ public class MonitoredResourceStatus {
      * @return if the monitored resource is healthy
      */
     public boolean isHealthy() {
-        return healthy;
+        return this.errors.isEmpty();
+    }
+
+    /**
+     * @param error error to add to the errors
+     */
+    public void addError(final String error) {
+        this.errors.add(error);
     }
 
     /**
@@ -68,6 +76,13 @@ public class MonitoredResourceStatus {
     }
 
     /**
+     * @param warning error to add to the errors
+     */
+    public void addWarning(final String warning) {
+        this.warnings.add(warning);
+    }
+
+    /**
      * @return the warnings of the monitored resource
      */
     public List<String> getWarnings() {
@@ -76,5 +91,9 @@ public class MonitoredResourceStatus {
         }
 
         return Collections.emptyList();
+    }
+
+    public void clear() {
+
     }
 }

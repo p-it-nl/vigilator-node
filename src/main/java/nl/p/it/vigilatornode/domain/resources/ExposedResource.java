@@ -73,10 +73,8 @@ public class ExposedResource extends MonitoredResource {
             if (webUrl != null && !webUrl.isEmpty()) {
                 retrieveUpdateFromResource(webUrl);
             } else {
-                take++;
                 MonitoredData result = new MonitoredData(new byte[0]);
                 result.addError(Error.NO_WEB_URL);
-                result.label(take);
                 data.add(result);
             }
         } else {
@@ -93,18 +91,14 @@ public class ExposedResource extends MonitoredResource {
         } catch (HttpClientException ex) {
             LOGGER.log(ERROR, "Excepting during request from {0} with "
                     + "exception being: {1}", getClass().getSimpleName(), ex);
-            take++;
             MonitoredData result = new MonitoredData(ex.getMessage().getBytes(), url);
             result.addError(Error.withArgs(Error.NO_RESPONE, name, url));
-            result.label(take);
             data.add(result);
         }
     }
 
     private Acceptor<MonitoredData> getAcceptor() {
         return (final MonitoredData result) -> {
-            take++;
-            result.label(take);
             data.add(result);
 
             if (result.hasData()) {
