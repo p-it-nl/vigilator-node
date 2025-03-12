@@ -29,11 +29,11 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
  */
 public abstract class MonitoredResource {
 
-    protected int take;
     protected String name;
     protected final MonitoredResourceConfig config;
     protected final Map<String, MonitoredPart> parts;
     protected final List<MonitoredData> data;
+    protected final MonitoredResourceStatus status;
 
     /**
      * FUTURE_WORK maybe this should be configurable In order to limit the
@@ -49,6 +49,7 @@ public abstract class MonitoredResource {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
         data = new ArrayList<>();
+        status = new MonitoredResourceStatus();
     }
 
     /**
@@ -95,6 +96,7 @@ public abstract class MonitoredResource {
      */
     public void setName(final String name) {
         this.name = name;
+        this.status.setName(name);
     }
 
     /**
@@ -121,7 +123,7 @@ public abstract class MonitoredResource {
      * @see MonitoredData.isHealthy();
      */
     public boolean isHealthy() {
-        return !data.isEmpty() && data.getLast().isHealthy();
+        return status.isHealthy();
     }
 
     /**
@@ -129,12 +131,7 @@ public abstract class MonitoredResource {
      * @see MonitoredData.isHealthy();
      */
     public MonitoredResourceStatus getStatus() {
-        if (!data.isEmpty()) {
-            MonitoredData last = data.getLast();
-            return new MonitoredResourceStatus(name, last.isHealthy(), last.getErrors(), last.getWarnings());
-        } else {
-            return new MonitoredResourceStatus(name, false, null, null);
-        }
+        return status;
     }
 
     /**
@@ -149,7 +146,6 @@ public abstract class MonitoredResource {
      * truncates the data based on DATA_LIMIT_AMOUNT to conserve memory usage
      */
     public void finaliseUpdate() {
-        take++;
         int diff = data.size() - DATA_LIMIT_AMOUNT;
         if (diff > 0) {
             for (int i = 0; i < diff; i++) {
