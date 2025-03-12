@@ -15,6 +15,7 @@
  */
 package nl.p.it.vigilatornode.domain.monitor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -245,9 +246,10 @@ public class MonitorTest {
         @Override
         public void updateStatus() {
             take++;
+            takes.put(take, new ArrayList<>());
             MonitoredData result = new MonitoredData(new byte[0]);
             result.label(take);
-            data.add(result);
+            takes.get(take).add(result);
         }
     }
 
@@ -260,10 +262,11 @@ public class MonitorTest {
         @Override
         public void updateStatus() {
             take++;
+            takes.put(take, new ArrayList<>());
             MonitoredData result = new MonitoredData(new byte[0]);
             result.addError(ERROR);
             result.label(take);
-            data.add(result);
+            takes.get(take).add(result);
         }
     }
 
@@ -276,10 +279,11 @@ public class MonitorTest {
         @Override
         public void updateStatus() {
             take++;
+            takes.put(take, new ArrayList<>());
             MonitoredData result = new MonitoredData(new byte[0]);
             result.addWarning(WARNING);
             result.label(take);
-            data.add(result);
+            takes.get(take).add(result);
         }
     }
 
@@ -292,6 +296,7 @@ public class MonitorTest {
         @Override
         public void updateStatus() {
             take++;
+            takes.put(take, new ArrayList<>());
 
             MonitoredData result = new MonitoredData(new byte[0]);
             int d = (int) (Math.random() * 3 + 1);//NOSONAR: creating new Random() object everytime I personally do not find better
@@ -302,7 +307,7 @@ public class MonitorTest {
             }
 
             result.label(take);
-            data.add(result);
+            takes.get(take).add(result);
         }
     }
 }

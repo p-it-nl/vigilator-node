@@ -28,6 +28,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import nl.p.it.vigilatornode.configuration.NodeConfig;
+import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.domain.resources.ExposedResource;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
@@ -81,7 +82,7 @@ public class MonitorIntegrationTest {
         MonitoredResource one = resources.get(0);
         MonitoredResource two = resources.get(1);
         MonitoredResource three = resources.get(2);
-
+        
         assertTrue(one.isHealthy());
         assertFalse(two.isHealthy());
         assertFalse(three.isHealthy());

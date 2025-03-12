@@ -15,6 +15,7 @@
  */
 package nl.p.it.vigilatornode.domain.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 import nl.p.it.vigilatornode.domain.data.MonitoredData;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ public class MonitoredResourceTest {
     private static final String KEY_IGNORE_TLS_ISSUES = "ignoreTLSIssues";
     private static final String TRUE = "true";
     private static final String ERROR = "mock";
+    private static final int DEFAULT_TAKE = 0;
 
     @BeforeEach
     public void setUp() {
@@ -244,7 +246,7 @@ public class MonitoredResourceTest {
 
     @Test
     public void getData_havingOneEntry() {
-        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        classUnderTest.takes.put(1, List.of(new MonitoredData(new byte[0])));
 
         List<MonitoredData> result = classUnderTest.getData();
 
@@ -264,7 +266,7 @@ public class MonitoredResourceTest {
     public void isHealthy_withLastMonitoredDataHealthy_expectingTrue() {
         boolean expected = true;
 
-        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        classUnderTest.takes.put(DEFAULT_TAKE, List.of(new MonitoredData(new byte[0])));
         boolean result = classUnderTest.isHealthy();
 
         assertEquals(expected, result);
@@ -276,7 +278,7 @@ public class MonitoredResourceTest {
 
         MonitoredData data = new MonitoredData(new byte[0]);
         data.addError(ERROR);
-        classUnderTest.data.add(data);
+        classUnderTest.takes.put(DEFAULT_TAKE, List.of(data));
         boolean result = classUnderTest.isHealthy();
 
         assertEquals(expected, result);
@@ -284,8 +286,16 @@ public class MonitoredResourceTest {
 
     @Test
     public void getStatus_withoutValues_expectingDefault() {
-        boolean expected = false;
+        MonitoredResourceStatus result = classUnderTest.getStatus();
 
+        assertNull(result);
+    }
+
+    @Test
+    public void getStatus_withLastMonitoredDataHealthy_expectingHealthy() {
+        boolean expected = true;
+
+        classUnderTest.takes.put(DEFAULT_TAKE, List.of(new MonitoredData(new byte[0])));
         MonitoredResourceStatus result = classUnderTest.getStatus();
 
         assertEquals(expected, result.isHealthy());
@@ -294,15 +304,45 @@ public class MonitoredResourceTest {
     }
 
     @Test
-    public void getStatus_withLastMonitoredDataHealthy_expectingHealthy() {
-        boolean expected = true;
+    public void getStatus_withLastMonitoredDataContainingTwoDataInstancesOneUnhealthy_expectingUnhealthy() {
+        boolean expected = false;
 
-        classUnderTest.data.add(new MonitoredData(new byte[0]));
+        MonitoredData data = new MonitoredData(new byte[0]);
+        data.addError(ERROR);
+        classUnderTest.takes.put(DEFAULT_TAKE, new ArrayList<>() {
+            {
+                add(data);
+            }
+        });
+        classUnderTest.takes.get(DEFAULT_TAKE).add(new MonitoredData(new byte[0]));
         MonitoredResourceStatus result = classUnderTest.getStatus();
 
         assertEquals(expected, result.isHealthy());
-        assertTrue(result.getErrors().isEmpty());
+        assertFalse(result.getErrors().isEmpty());
         assertTrue(result.getWarnings().isEmpty());
+    }
+
+    @Test
+    public void getStatus_withLastMonitoredDataContainingTwoDataInstancesBothUnhealthy_expectingUnhealthy() {
+        boolean expected = false;
+        int expectedSize = 2;
+
+        MonitoredData firstData = new MonitoredData(new byte[0]);
+        firstData.addError(ERROR);
+        classUnderTest.takes.put(DEFAULT_TAKE, new ArrayList<>() {
+            {
+                add(firstData);
+            }
+        });
+        MonitoredData secondData = new MonitoredData(new byte[0]);
+        secondData.addError(ERROR);
+        classUnderTest.takes.get(DEFAULT_TAKE).add(secondData);
+        MonitoredResourceStatus result = classUnderTest.getStatus();
+
+        assertEquals(expected, result.isHealthy());
+        assertFalse(result.getErrors().isEmpty());
+        assertTrue(result.getWarnings().isEmpty());
+        assertEquals(expectedSize, result.getErrors().size());
     }
 
     @Test
@@ -311,7 +351,7 @@ public class MonitoredResourceTest {
 
         MonitoredData data = new MonitoredData(new byte[0]);
         data.addError(ERROR);
-        classUnderTest.data.add(data);
+        classUnderTest.takes.put(DEFAULT_TAKE, List.of(data));
         MonitoredResourceStatus result = classUnderTest.getStatus();
 
         assertEquals(expected, result.isHealthy());
