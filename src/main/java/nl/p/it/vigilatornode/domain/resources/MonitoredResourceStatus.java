@@ -54,14 +54,16 @@ public class MonitoredResourceStatus {
      * @return if the monitored resource is healthy
      */
     public boolean isHealthy() {
-        return this.errors.isEmpty();
+        return errors.isEmpty();
     }
 
     /**
-     * @param error error to add to the errors
+     * @param errors errors to add to the errors
      */
-    public void addError(final String error) {
-        this.errors.add(error);
+    public void addErrors(final List<String> errors) {
+        if (errors != null) {
+            this.errors.addAll(errors);
+        }
     }
 
     /**
@@ -76,10 +78,12 @@ public class MonitoredResourceStatus {
     }
 
     /**
-     * @param warning error to add to the errors
+     * @param warnings warnings to add to the warnings
      */
-    public void addWarning(final String warning) {
-        this.warnings.add(warning);
+    public void addWarnings(final List<String> warnings) {
+        if (warnings != null) {
+            this.warnings.addAll(warnings);
+        }
     }
 
     /**
@@ -93,7 +97,23 @@ public class MonitoredResourceStatus {
         return Collections.emptyList();
     }
 
+    /**
+     * Clears the errors and warnings
+     * <p>
+     * Using this method is preferred to constructing a new instance since
+     * object creation is expensive and there is always only one current status
+     * of a resource
+     */
     public void clear() {
+        errors.clear();
+        warnings.clear();
+    }
 
+    @Override
+    public String toString() {
+        return "MonitoredResourceStatus{" 
+                + "name=" + name 
+                + ", errors=" + errors 
+                + ", warnings=" + warnings + '}';
     }
 }

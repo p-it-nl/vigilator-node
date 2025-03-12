@@ -16,6 +16,7 @@
 package nl.p.it.vigilatornode.domain.resources;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +30,14 @@ import nl.p.it.vigilatornode.domain.data.MonitoredData;
  */
 public abstract class MonitoredResource {
 
+    protected int take;
     protected String name;
     protected final MonitoredResourceConfig config;
     protected final Map<String, MonitoredPart> parts;
-    protected final List<MonitoredData> data;
+    protected final Map<Integer, List<MonitoredData>> takes;
     protected final MonitoredResourceStatus status;
+
+    private final List<MonitoredData> data;
 
     /**
      * FUTURE_WORK maybe this should be configurable In order to limit the
@@ -48,6 +52,7 @@ public abstract class MonitoredResource {
     protected MonitoredResource() {
         config = new MonitoredResourceConfig();
         parts = new HashMap<>();
+        takes = new HashMap<>();
         data = new ArrayList<>();
         status = new MonitoredResourceStatus();
     }
@@ -110,11 +115,9 @@ public abstract class MonitoredResource {
      * @return the data
      */
     public List<MonitoredData> getData() {
-        if (data != null) {
-            return data;
-        } else {
-            return Collections.emptyList();
-        }
+        data.clear();
+        takes.values().forEach(data::addAll);
+        return data;
     }
 
     /**
@@ -123,7 +126,14 @@ public abstract class MonitoredResource {
      * @see MonitoredData.isHealthy();
      */
     public boolean isHealthy() {
-        return status.isHealthy();
+        if (!takes.isEmpty()) {
+            MonitoredResourceStatus current = getStatus();
+            if (current != null) {
+                return current.isHealthy();
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -131,7 +141,17 @@ public abstract class MonitoredResource {
      * @see MonitoredData.isHealthy();
      */
     public MonitoredResourceStatus getStatus() {
-        return status;
+        status.clear();
+        List<MonitoredData> lastData = takes.get(take);
+        if (lastData != null) {
+            for (MonitoredData entry : lastData) {
+                status.addErrors(entry.getErrors());
+                status.addWarnings(entry.getWarnings());
+            }
+            return status;
+        } else {
+            return null;
+        }
     }
 
     /**

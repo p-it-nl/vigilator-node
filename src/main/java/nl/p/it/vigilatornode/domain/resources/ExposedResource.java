@@ -21,6 +21,7 @@ import nl.p.it.vigilatornode.domain.monitor.Acceptor;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
 import nl.p.it.vigilatornode.exception.HttpClientException;
 import static java.lang.System.Logger.Level.ERROR;
+import java.util.ArrayList;
 import nl.p.it.vigilatornode.domain.out.Option;
 
 /**
@@ -62,6 +63,8 @@ public class ExposedResource extends MonitoredResource {
      */
     @Override
     public void updateStatus() {
+        take++;
+        takes.put(take, new ArrayList<>());
         resourceMonitorEndpoint = (resourceMonitorEndpoint != null ? resourceMonitorEndpoint : config.getUrl());
         if (resourceMonitorEndpoint != null) {
             retrieveUpdateFromResource(resourceMonitorEndpoint);
@@ -75,7 +78,7 @@ public class ExposedResource extends MonitoredResource {
             } else {
                 MonitoredData result = new MonitoredData(new byte[0]);
                 result.addError(Error.NO_WEB_URL);
-                data.add(result);
+                takes.get(take).add(result);
             }
         } else {
             // resource does not require web availability checks
@@ -93,13 +96,13 @@ public class ExposedResource extends MonitoredResource {
                     + "exception being: {1}", getClass().getSimpleName(), ex);
             MonitoredData result = new MonitoredData(ex.getMessage().getBytes(), url);
             result.addError(Error.withArgs(Error.NO_RESPONE, name, url));
-            data.add(result);
+            takes.get(take).add(result);
         }
     }
 
     private Acceptor<MonitoredData> getAcceptor() {
         return (final MonitoredData result) -> {
-            data.add(result);
+            takes.get(take).add(result);
 
             if (result.hasData()) {
                 if (resourceMonitorEndpoint.equals(result.getUrl())) {
