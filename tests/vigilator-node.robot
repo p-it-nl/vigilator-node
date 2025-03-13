@@ -26,12 +26,16 @@ Suite Setup    Create Session    VigilatorNode    ${uri}
 Clear Before - All tests
     Clean
 
-Retrieve status update from Vigilator node 
+Retrieve status update from Vigilator node
     [Documentation]    Retrieving status update from node
     [Tags]             Expecting status
-    ${resp}=           GET On Session                         VigilatorNode                       /status      
+    ${resp}=           GET On Session                        VigilatorNode    /status    
 
     Log To Console    ${resp.text}
+    Should Contain    ${resp.text}    ${base-status-name}
+    Should Contain    ${resp.text}    ${base-status-errors}
+    Should Contain    ${resp.text}    ${base-status-warnings}
+    Should Contain    ${resp.text}    ${base-status-healthy}
 
 Clear After - All tests
     Clean

@@ -28,8 +28,8 @@ import nl.p.it.vigilatornode.domain.monitor.Monitor;
 import nl.p.it.vigilatornode.domain.resources.MonitoredResource;
 import nl.p.it.vigilatornode.exception.MonitorException;
 import nl.p.it.vigilatornode.domain.out.OutgoingClient;
-import static java.lang.System.Logger.Level.INFO;
 import nl.p.it.vigilatornode.domain.monitor.MonitorStore;
+import static java.lang.System.Logger.Level.INFO;
 
 /**
  * Initializes the application
