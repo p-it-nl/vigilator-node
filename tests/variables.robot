@@ -15,3 +15,8 @@
  */
 *** Variables ***
 ${uri}=    http://localhost:8888
+
+${base-status-name}=        "name"
+${base-status-errors}=      "errors"
+${base-status-warnings}=    "warnings"
+${base-status-healthy}=     "healthy"
